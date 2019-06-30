@@ -16,6 +16,7 @@ public class Block : MonoBehaviour
 
     [SerializeField] private Sprite[] allBocks;
     [SerializeField] private TMPro.TextMeshProUGUI equationText;
+    [SerializeField] private Canvas canvas;
     private float amountToMove = 2.57f;
     private float totalAmountToMove;
     private float screenWidth = 10f;
@@ -34,20 +35,33 @@ public class Block : MonoBehaviour
     private float SecondColumnConfirm = 1;
     private int IgnoreFirstTrue =1;
     private bool timeTriggered = false;
+    private string textLeftMargin;
+    private float solution;
     void Start()
     {
-
+        //if bottom of block not hit keep block falling
+        
+        //text moving relative to canvas
         active = true;
-        var bla = new List<Vector3>();
-
-        bla.Add(new Vector3(5,10));
+        
         blocksOnMap = FindObjectsOfType<Block>();
         
         datamanager = FindObjectOfType<Datamanager>();
         spriteRender =  GetComponent<SpriteRenderer>();
         
         var pos = new Vector3(6.6f, 10.74f, blockZValue);
+
+        
         transform.position = pos;
+        
+
+        var sign = GenerateOperand();
+        var equation = GenerateEquation(sign);
+        var num1Str = equation[0].ToString();
+        var num2Str = equation[1].ToString();
+        //var spaces = PositionTextBasedOffEquation(num1Str.Length+num2Str.Length);
+        equationText.text = "100+100";
+        solution = ComputeSolution(equation[0], equation[1],sign);
         spriteRender.sprite = allBocks[Random.Range(0,10)];
         color = spriteRender.color;
 
@@ -64,33 +78,44 @@ public class Block : MonoBehaviour
 
 
 
+        equationText.transform.position = transform.position;
 
 
         if (!active)
         {
-            
+            if (color.a != 1.0)
+            {
+                color.a = 1.0f;
+                spriteRender.color = color;
+            }
             return;
         }
 
-       
         
         if (currentTimeOfLowerPortionOfBlockHit != DateTime.MinValue && TimeInSecondsPast(currentTimeOfLowerPortionOfBlockHit, 2) && (lowerWallHit || IgnoreFirstTrue>1))
         {
             
             
-            color.a = 1.0f;
-            spriteRender.color = color;
-            var currentX = transform.position.x;
-            var currentY = transform.position.y;
-            datamanager.AddToGrid(new Vector3((float)Math.Round(currentX),(float)Math.Round(currentY)));
             
-            datamanager.AddToTopsOfBlockData(spriteRender.bounds.max);
-            datamanager.AddToBottomsOfBlockData(spriteRender.bounds.min);
-            datamanager.AddToBoundsByColumn(transform.position.x,spriteRender.bounds);
+            
+            
             //datamanager.AddToblocksOnMap(gameObject);
+            
+
+
+            var newyPos = datamanager.SnapToBottom(bottomOfMap, transform.position.x, transform.position.y,spriteRender.bounds.min.y);
+
+
+            transform.position = new Vector3(transform.position.x, newyPos, blockZValue);
+
+            StoreBlcokData(transform.position.x,transform.position.y);
+
+
+
+
+            active = false;
             color.a = 1.0f;
             spriteRender.color = color;
-            active = false;
             datamanager.CreateNewBlock();
 
         }
@@ -127,12 +152,95 @@ public class Block : MonoBehaviour
 
     }
 
+
+    public string PositionTextBasedOffEquation(int equationLength)
+    {
+        var spaces = "";
+        switch (equationLength)
+        {
+            case 2:
+                equationText.fontSize = 35;
+                spaces = "  ";
+                break;
+            case 3:
+                spaces = " ";
+                break;
+
+        }
+        return spaces;
+    }
+
+
+    public int ComputeSolution(int num1,int num2,string operand)
+    {
+
+        int answer = 0 ;
+        switch(operand)
+        {
+            case "+":
+                answer = num1 + num2;
+                break;
+            case "-":
+                answer = num1 - num2;
+                break;
+            case "*":
+                answer = num1 * num2;
+                break;
+            case "/":
+                answer = num1 / num2;
+                break;
+
+        }
+        Debug.Log(answer);
+        return answer;
+    }
+
+
+    public string GenerateOperand()
+    {
+
+        var operands = new string[] { "+", "-", "/", "*" };
+        return operands[Random.Range(0, operands.Length - 1)];
+    }
+
+    public int[] GenerateEquation(string operand)
+    {
+
+
+        var num1 = Random.Range(1, 12);
+        var num2 = Random.Range(1, 12);
+        if (operand == "/")
+        {
+            
+            while (num1 % num2 != 0)
+            {
+                num2 = Random.Range(1, 12); 
+            }
+        }
+
+       
+        return new int[] { num1, num2 };
+    }
+
+
+
+    public void StoreBlcokData(float currentX, float currentY)
+    {
+        datamanager.AddToRowsDictionary(transform.position);
+        datamanager.AddToColumnsDictionary(transform.position);
+        datamanager.AddToGrid(new Vector3((float)Math.Round(currentX), (float)Math.Round(currentY)));
+
+        datamanager.AddToTopsOfBlockData(spriteRender.bounds.max);
+        datamanager.AddToBottomsOfBlockData(spriteRender.bounds.min);
+        datamanager.AddToBoundsByColumn(transform.position.x, spriteRender.bounds);
+    }
+
     private bool BottomBlockHit()
     {
 
         
         
-        if (datamanager.BlockBelowTest(transform.position.x,spriteRender.bounds.min.y) )
+        if (datamanager.BlockBelow(transform.position.x,spriteRender.bounds.min.y) )
         {
             if (IgnoreFirstTrue > 1)
             {
@@ -171,7 +279,7 @@ public class Block : MonoBehaviour
                 return;
             }
 
-            if (datamanager.PotentialOverlapDetectedTest(totalAmountToMove,spriteRender.bounds.min.y))
+            if (datamanager.PotentialOverlapDetected(totalAmountToMove,spriteRender.bounds.min.y))
             {
                 Debug.Log("dectected");
                 return;
@@ -190,7 +298,7 @@ public class Block : MonoBehaviour
                 return;
             }
 
-            if (datamanager.PotentialOverlapDetectedTest(totalAmountToMove, spriteRender.bounds.min.y))
+            if (datamanager.PotentialOverlapDetected(totalAmountToMove, spriteRender.bounds.min.y))
             {
                 Debug.Log("dectected");
                 return;
@@ -271,22 +379,11 @@ public class Block : MonoBehaviour
         {
             color.a = 1;
         }
-
+        
         blinkTimeStamp = DateTime.Now;
         spriteRender.color = color;
     }
 
     
-
-    bool PotentialOverlapDetected()
-    {   
-        
-        if (datamanager.PotentialGridOverlap(spriteRender.bounds.min.y) && datamanager.InColumn((float)totalAmountToMove))
-        {
-            return true;
-        }
-
-        return false;
-    }
-    
+   
 }
