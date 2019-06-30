@@ -36,7 +36,7 @@ public class Block : MonoBehaviour
     private int IgnoreFirstTrue =1;
     private bool timeTriggered = false;
     private string textLeftMargin;
-    private float solution;
+    private int solution;
     void Start()
     {
         //if bottom of block not hit keep block falling
@@ -59,8 +59,9 @@ public class Block : MonoBehaviour
         var equation = GenerateEquation(sign);
         var num1Str = equation[0].ToString();
         var num2Str = equation[1].ToString();
-        //var spaces = PositionTextBasedOffEquation(num1Str.Length+num2Str.Length);
-        equationText.text = "100+100";
+        var spaces = PositionTextBasedOffEquation(num1Str.Length+num2Str.Length);
+        equationText.text = spaces + equation[0] + sign + equation[1]; 
+        
         solution = ComputeSolution(equation[0], equation[1],sign);
         spriteRender.sprite = allBocks[Random.Range(0,10)];
         color = spriteRender.color;
@@ -111,7 +112,7 @@ public class Block : MonoBehaviour
             StoreBlcokData(transform.position.x,transform.position.y);
 
 
-
+            datamanager.CheckForMathes(transform.position.y);
 
             active = false;
             color.a = 1.0f;
@@ -159,10 +160,11 @@ public class Block : MonoBehaviour
         switch (equationLength)
         {
             case 2:
-                equationText.fontSize = 35;
+                
                 spaces = "  ";
                 break;
             case 3:
+               
                 spaces = " ";
                 break;
 
@@ -191,7 +193,7 @@ public class Block : MonoBehaviour
                 break;
 
         }
-        Debug.Log(answer);
+        
         return answer;
     }
 
@@ -207,8 +209,8 @@ public class Block : MonoBehaviour
     {
 
 
-        var num1 = Random.Range(1, 12);
-        var num2 = Random.Range(1, 12);
+        var num1 = Random.Range(1, 3);
+        var num2 = Random.Range(1, 3);
         if (operand == "/")
         {
             
@@ -233,6 +235,7 @@ public class Block : MonoBehaviour
         datamanager.AddToTopsOfBlockData(spriteRender.bounds.max);
         datamanager.AddToBottomsOfBlockData(spriteRender.bounds.min);
         datamanager.AddToBoundsByColumn(transform.position.x, spriteRender.bounds);
+        datamanager.AddToSolutionRowsDictionary(transform.position.y, transform.position.x,solution);
     }
 
     private bool BottomBlockHit()

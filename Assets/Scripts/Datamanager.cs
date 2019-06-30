@@ -19,6 +19,7 @@ public class Datamanager : MonoBehaviour
     private Dictionary<float, List<Bounds>> boundsByRow;
     private Dictionary<float, List<float>> positionOnGridByRow;
     private Dictionary<float, List<float>> positionOnGridByColumn;
+    private Dictionary<float, List<int>> solutionByRow;
     private List<float> rows;
     private List<float> columns;
     private List<float> rowsTwoPlaces;
@@ -30,12 +31,16 @@ public class Datamanager : MonoBehaviour
     void Start()
 
     {
+
+
+        solutionByRow = new Dictionary<float,List<int>>();
         boundsByColumn = new Dictionary<float, List<Bounds>>();
         boundsByRow = new Dictionary<float, List<Bounds>>();
         positionOnGridByRow = new Dictionary<float, List<float>>();
         positionOnGridByColumn = new Dictionary<float, List<float>>();
         CreateRowsDictionary();
         CreateColumnsDictionary();
+        CreateSolutionsByRowsDictionary();
         rows = new List<float> { 2, 4, 7, 9 };
         columns = new List<float> { 2, 4, 7, 9, 12 };
         rowsTwoPlaces = new List<float> { 1.51f, 4.17f,6.83f, 9.49f};
@@ -48,7 +53,15 @@ public class Datamanager : MonoBehaviour
         BottomOfBlocks = new List<Vector3>();
         postionsOnGrid = new List<Vector3>();
     }
+    public void CreateSolutionsByRowsDictionary()
+    {
+        
+        solutionByRow.Add(2, new List<int> { -1000, -1000, -1000, -1000, -1000 });
+        solutionByRow.Add(4, new List<int> { -1000, -1000, -1000, -1000, -1000 });
+        solutionByRow.Add(7, new List<int> { -1000, -1000, -1000, -1000, -1000 });
+        solutionByRow.Add(9, new List<int> { -1000, -1000, -1000, -1000, -1000 });
 
+    }
     public void CreateRowsDictionary()
     {
         positionOnGridByRow.Add(2, new List<float>());
@@ -69,26 +82,80 @@ public class Datamanager : MonoBehaviour
     }
 
 
+    public void AddToSolutionRowsDictionary(float row,float column,int solution)
+    {
 
+        //all additons to solutions dictionary must use a switch statement and take the columsn into account
+        var columnRounded = (float)Math.Round(column);
+
+        var currentRow = solutionByRow[(float)Math.Round(row)];
+
+        var len  = solutionByRow[(float)Math.Round(row)].Count;
+
+        switch (columnRounded)
+        {
+            case 2:
+                currentRow[0] = solution;
+                break;
+            case 4:
+                currentRow[1] = solution;
+                break;
+            case 7:
+                currentRow[2] = solution;
+                break;
+            case 9:
+                currentRow[3] = solution;
+                break;
+            case 12:
+                currentRow[4] = solution;
+                break;
+        }
+
+
+        Debug.Log(solutionByRow[(float)Math.Round(row)][len - 1]);
+    }
     public void AddToColumnsDictionary(Vector3 blockPosition)
     {
 
         
         positionOnGridByColumn[(float)Math.Round(blockPosition.x)].Add((float)Math.Round(blockPosition.y));
 
-
+        
     }
 
 
     public void AddToRowsDictionary(Vector3 blockPosition)
     {
-        Debug.Log((float)Math.Round(blockPosition.y));
+        
         positionOnGridByRow[(float)Math.Round(blockPosition.y)].Add((float)Math.Round(blockPosition.x));
 
 
     }
 
+    public void CheckForMathes(float row)
+    {
 
+        var currentRowSolutions = solutionByRow[(float)Math.Round(row)];
+
+
+        if (!currentRowSolutions.Contains(-1000))
+        {
+            var rowCopy = new List<int>(currentRowSolutions);
+            var rowCopyRev = new List<int>(currentRowSolutions);
+            rowCopyRev.Sort();
+            rowCopyRev.Reverse();
+            rowCopy.Sort();
+
+            if (rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions))
+            {
+                Debug.Log("true");
+            }
+            else
+            {
+                Debug.Log("false");
+            }
+        }
+    }
 
     public void AddToBoundsByColumn(float column, Bounds bounds)
     {
