@@ -168,6 +168,7 @@ public class Block : MonoBehaviour
     {
        
         Instantiate(particules, new Vector3( transform.position.x, transform.position.y,0),transform.rotation);
+        datamanager.RemoveDataAfterDeletion(transform.position.y, transform.position.x);
         DestroyObject(gameObject);
     }
 
@@ -188,6 +189,7 @@ public class Block : MonoBehaviour
         datamanager.AddToBottomsOfBlockData(spriteRender.bounds.min);
         datamanager.AddToBoundsByColumn(transform.position.x, spriteRender.bounds);
         datamanager.AddToSolutionRowsDictionary(transform.position.y, transform.position.x,solution);
+        
     }
 
     private bool BottomBlockHit()

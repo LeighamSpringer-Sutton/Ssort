@@ -65,6 +65,17 @@ public class Datamanager : MonoBehaviour
         CreateNewBlock();
 
     }
+
+    public void RemoveDataAfterDeletion(float yPos, float xPos)
+    {
+        var xRound = (float )Math.Round(xPos);
+        var yRound = (float)Math.Round(yPos);
+        Debug.Log(positionOnGridByRow[yRound].Count);
+        positionOnGridByRow[yRound].Remove(xRound);
+        Debug.Log(positionOnGridByRow[yRound].Count);
+
+    }
+
     public string GenerateOperand()
     {
 
@@ -99,14 +110,17 @@ public class Datamanager : MonoBehaviour
         var num1 = upComingEquations[upComingEquations.Count - 1][0];
         var num2 = upComingEquations[upComingEquations.Count - 1][1];
         upComingEquations.RemoveAt(upComingEquations.Count - 1);
-        
+        if (upComingEquations.Count != 0)
+        {
+            Debug.Log("upcoming is " + upComingEquations[0][0] + upComingSigns[0] + upComingEquations[0][1]);
+        }
                
-        if (upComingEquations.Count == 0)
+        else if (upComingEquations.Count == 0)
         {
             GenerateTwoEquations();
-           
+            Debug.Log("upcoming is " + upComingEquations[1][0] + upComingSigns[1] + upComingEquations[1][1]);
         }
-        Debug.Log("upcoming is " + upComingEquations[0][0] + upComingSigns[0] + upComingEquations[0][1]);
+       ;
         return new int[] { num1, num2 };
     }
     public int[] GenerateEquation(string operand)
@@ -229,7 +243,7 @@ public class Datamanager : MonoBehaviour
         }
 
 
-        Debug.Log(solutionByRow[(float)Math.Round(row)][len - 1]);
+        //Debug.Log(solutionByRow[(float)Math.Round(row)][len - 1]);
     }
     public void AddToColumnsDictionary(Vector3 blockPosition)
     {
