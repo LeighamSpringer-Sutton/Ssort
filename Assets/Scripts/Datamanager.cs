@@ -70,10 +70,13 @@ public class Datamanager : MonoBehaviour
     {
         var xRound = (float )Math.Round(xPos);
         var yRound = (float)Math.Round(yPos);
-        Debug.Log(positionOnGridByRow[yRound].Count);
+        
         positionOnGridByRow[yRound].Remove(xRound);
-        Debug.Log(positionOnGridByRow[yRound].Count);
+        
 
+        Debug.Log(positionOnGridByColumn[yRound].Count);
+        positionOnGridByColumn[xRound].Remove(yRound);
+        Debug.Log(positionOnGridByColumn[yRound].Count);
     }
 
     public string GenerateOperand()
