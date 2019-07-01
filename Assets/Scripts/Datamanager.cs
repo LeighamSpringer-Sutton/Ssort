@@ -5,12 +5,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Transactions;
 using UnityEditor.iOS;
+using Random = UnityEngine.Random;
 using UnityEngine;
 
 public class Datamanager : MonoBehaviour
 {
     // Start is called before the first frame update
-
+    //GENERATE BLOCKS FROM DATAMANAGER TO AVOID DELETING ORIGINAL
     public List<Vector3> postionsOnGrid;
     private List<Vector3> topsOfBlocks;
     private List<Vector3> BottomOfBlocks;
@@ -25,6 +26,8 @@ public class Datamanager : MonoBehaviour
     private List<float> rowsTwoPlaces;
     [SerializeField] private GameObject block;
     private float blockZValue = 2f;
+    private List<int[]> upComingEquations;
+    private List<string> upComingSigns;
     private float bottomVsTopThreshold = 0.1f;
     private int numberOfBlocksSpawned = 1;
     private int spawnCount = 0;
@@ -32,6 +35,10 @@ public class Datamanager : MonoBehaviour
 
     {
 
+
+
+        upComingEquations = new List<int[]>();
+        upComingSigns = new List<string>();
 
         solutionByRow = new Dictionary<float,List<int>>();
         boundsByColumn = new Dictionary<float, List<Bounds>>();
@@ -41,6 +48,7 @@ public class Datamanager : MonoBehaviour
         CreateRowsDictionary();
         CreateColumnsDictionary();
         CreateSolutionsByRowsDictionary();
+        GenerateTwoEquations();
         rows = new List<float> { 2, 4, 7, 9 };
         columns = new List<float> { 2, 4, 7, 9, 12 };
         rowsTwoPlaces = new List<float> { 1.51f, 4.17f,6.83f, 9.49f};
@@ -52,7 +60,116 @@ public class Datamanager : MonoBehaviour
         topsOfBlocks = new List<Vector3>();
         BottomOfBlocks = new List<Vector3>();
         postionsOnGrid = new List<Vector3>();
+
+
+        CreateNewBlock();
+
     }
+    public string GenerateOperand()
+    {
+
+        var operands = new string[] { "+", "-", "/", "*" };
+        return operands[Random.Range(0, operands.Length - 1)];
+    }
+    private void GenerateTwoEquations()
+    {
+        var sign = GenerateOperand();
+        var equation = GenerateEquation(sign);
+        upComingSigns.Add(sign);
+        upComingEquations.Add(equation);
+
+
+        var sign2 = GenerateOperand();
+        var equation2 = GenerateEquation(sign2);
+        upComingSigns.Add(sign);
+        upComingEquations.Add(equation2);
+    }
+
+    public string PullSign()
+    {
+        var sign = upComingSigns[upComingSigns.Count - 1];
+        upComingSigns.RemoveAt(upComingSigns.Count - 1);
+        return sign;
+    }
+
+    public int[] PullEquation()
+    {
+
+       
+        var num1 = upComingEquations[upComingEquations.Count - 1][0];
+        var num2 = upComingEquations[upComingEquations.Count - 1][1];
+        upComingEquations.RemoveAt(upComingEquations.Count - 1);
+        
+               
+        if (upComingEquations.Count == 0)
+        {
+            GenerateTwoEquations();
+           
+        }
+        Debug.Log("upcoming is " + upComingEquations[0][0] + upComingSigns[0] + upComingEquations[0][1]);
+        return new int[] { num1, num2 };
+    }
+    public int[] GenerateEquation(string operand)
+    {
+
+
+        var num1 = Random.Range(1, 3);
+        var num2 = Random.Range(1, 3);
+        if (operand == "/")
+        {
+
+            while (num1 % num2 != 0)
+            {
+                num2 = Random.Range(1, 12);
+            }
+        }
+
+
+        return new int[] { num1, num2 };
+    }
+    public string PositionTextBasedOffEquation(int equationLength)
+    {
+        var spaces = "";
+        switch (equationLength)
+        {
+            case 2:
+
+                spaces = "  ";
+                break;
+            case 3:
+
+                spaces = " ";
+                break;
+
+        }
+        return spaces;
+    }
+
+    public int ComputeSolution(int num1, int num2, string operand)
+    {
+
+        int answer = 0;
+        switch (operand)
+        {
+            case "+":
+                answer = num1 + num2;
+                break;
+            case "-":
+                answer = num1 - num2;
+                break;
+            case "*":
+                answer = num1 * num2;
+                break;
+            case "/":
+                answer = num1 / num2;
+                break;
+
+        }
+
+        return answer;
+    }
+
+
     public void CreateSolutionsByRowsDictionary()
     {
         
@@ -135,7 +252,9 @@ public class Datamanager : MonoBehaviour
     public void CheckForMathes(float row)
     {
 
-        var currentRowSolutions = solutionByRow[(float)Math.Round(row)];
+        var rowRounded = (float)Math.Round(row);
+
+        var currentRowSolutions = solutionByRow[rowRounded];
 
 
         if (!currentRowSolutions.Contains(-1000))
@@ -148,7 +267,17 @@ public class Datamanager : MonoBehaviour
 
             if (rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions))
             {
-                Debug.Log("true");
+                var blocksSpwaned = FindObjectsOfType<Block>();
+
+                foreach (var block in blocksSpwaned)
+                {
+                    if ((float) Math.Round(block.transform.position.y) == rowRounded)
+                    {
+                        block.DeleteBlock();
+                    }
+                }
+                
+                
             }
             else
             {
@@ -299,7 +428,8 @@ public class Datamanager : MonoBehaviour
 
     public void CreateNewBlock()
     {
-        Instantiate(block, new Vector3(6.6f, 10.74f, blockZValue), transform.rotation);
+        var blck = Instantiate(block, new Vector3(6.6f, 10.74f, blockZValue), transform.rotation);
+        blck.GetComponent<Block>().OnBlockCreation();
         numberOfBlocksSpawned++;
         spawnCount++;
     }

@@ -12,18 +12,19 @@ using UnityEditor;
 
 public class Block : MonoBehaviour
 {
-    // Start is called before the first frame update
+    //TODO CURRENT BUG BLOCK IS DESTORY ORIGINAL INSTANCE MAKE CLOSE WHEN INSTATIATING INSTEAD OF INSTIATING ORIGINAL**
 
     [SerializeField] private Sprite[] allBocks;
     [SerializeField] private TMPro.TextMeshProUGUI equationText;
-    [SerializeField] private Canvas canvas;
+    //[SerializeField] private Canvas canvas;
+    [SerializeField] private GameObject particules;
     private float amountToMove = 2.57f;
     private float totalAmountToMove;
     private float screenWidth = 10f;
     private float leftMaxWallLocation = 1.52f;
     private float rightMaxWallLocation = 11.81f;
     private bool lowerWallHit = false;
-    private bool active = true;
+    private bool active = false;
     private DateTime currentTimeOfLowerPortionOfBlockHit;
     private float bottomOfMap = 1.52f;
     private Color color;
@@ -37,12 +38,15 @@ public class Block : MonoBehaviour
     private bool timeTriggered = false;
     private string textLeftMargin;
     private int solution;
-    void Start()
+    private int blockCreated=0;
+    public void OnBlockCreation()
     {
         //if bottom of block not hit keep block falling
         
         //text moving relative to canvas
-        active = true;
+
+        //
+        
         
         blocksOnMap = FindObjectsOfType<Block>();
         
@@ -55,19 +59,21 @@ public class Block : MonoBehaviour
         transform.position = pos;
         
 
-        var sign = GenerateOperand();
-        var equation = GenerateEquation(sign);
+        var sign = datamanager.PullSign();
+
+
+        var equation = datamanager.PullEquation();
         var num1Str = equation[0].ToString();
         var num2Str = equation[1].ToString();
-        var spaces = PositionTextBasedOffEquation(num1Str.Length+num2Str.Length);
+        var spaces = datamanager.PositionTextBasedOffEquation(num1Str.Length+num2Str.Length);
         equationText.text = spaces + equation[0] + sign + equation[1]; 
         
-        solution = ComputeSolution(equation[0], equation[1],sign);
+        solution = datamanager.ComputeSolution(equation[0], equation[1],sign);
         spriteRender.sprite = allBocks[Random.Range(0,10)];
         color = spriteRender.color;
 
-       
-        
+
+        active = true;
     }
 
     // Update is called once per frame
@@ -75,9 +81,9 @@ public class Block : MonoBehaviour
     void Update()
     {
 
+        
 
-
-
+        
 
         equationText.transform.position = transform.position;
 
@@ -154,75 +160,21 @@ public class Block : MonoBehaviour
     }
 
 
-    public string PositionTextBasedOffEquation(int equationLength)
+    
+
+   
+
+    public void DeleteBlock()
     {
-        var spaces = "";
-        switch (equationLength)
-        {
-            case 2:
-                
-                spaces = "  ";
-                break;
-            case 3:
-               
-                spaces = " ";
-                break;
-
-        }
-        return spaces;
-    }
-
-
-    public int ComputeSolution(int num1,int num2,string operand)
-    {
-
-        int answer = 0 ;
-        switch(operand)
-        {
-            case "+":
-                answer = num1 + num2;
-                break;
-            case "-":
-                answer = num1 - num2;
-                break;
-            case "*":
-                answer = num1 * num2;
-                break;
-            case "/":
-                answer = num1 / num2;
-                break;
-
-        }
-        
-        return answer;
-    }
-
-
-    public string GenerateOperand()
-    {
-
-        var operands = new string[] { "+", "-", "/", "*" };
-        return operands[Random.Range(0, operands.Length - 1)];
-    }
-
-    public int[] GenerateEquation(string operand)
-    {
-
-
-        var num1 = Random.Range(1, 3);
-        var num2 = Random.Range(1, 3);
-        if (operand == "/")
-        {
-            
-            while (num1 % num2 != 0)
-            {
-                num2 = Random.Range(1, 12); 
-            }
-        }
-
        
-        return new int[] { num1, num2 };
+        Instantiate(particules, new Vector3( transform.position.x, transform.position.y,0),transform.rotation);
+        DestroyObject(gameObject);
     }
+
+
+    
+
+    
 
 
 
