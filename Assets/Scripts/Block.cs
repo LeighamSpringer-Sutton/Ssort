@@ -118,12 +118,19 @@ public class Block : MonoBehaviour
             StoreBlcokData(transform.position.x,transform.position.y);
 
 
-            datamanager.CheckForMathes(transform.position.y);
+            if (datamanager.CheckForMathes(transform.position.y, transform.position.x))
+            {
+                datamanager.ShiftDownOneRow();
+            }
+            
+            
+            
 
             active = false;
             color.a = 1.0f;
             spriteRender.color = color;
             datamanager.CreateNewBlock();
+            
 
         }
         if (!lowerWallHit && !BottomBlockHit())
@@ -159,12 +166,12 @@ public class Block : MonoBehaviour
 
     }
 
-
-    
-    private void SnapRowsDownAfterDeletion()
+    public bool isActive()
     {
-        //TODO
+        return active;
     }
+    
+    
    
     private void ShiftAllDataDownOneRow()
     {
@@ -176,6 +183,7 @@ public class Block : MonoBehaviour
         TriggerParticules();
         datamanager.RemoveDataAfterDeletion(transform.position.y, transform.position.x, spriteRender.bounds.max, spriteRender.bounds,solution);
         DestroyObject(gameObject);
+        
     }
 
     private void TriggerParticules()

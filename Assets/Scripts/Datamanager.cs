@@ -281,7 +281,7 @@ public class Datamanager : MonoBehaviour
 
     }
 
-    public void CheckForMathes(float row)
+    public bool CheckForMathes(float row,float xPos)
     {
 
         var rowRounded = (float)Math.Round(row);
@@ -306,17 +306,60 @@ public class Datamanager : MonoBehaviour
                     if ((float) Math.Round(block.transform.position.y) == rowRounded)
                     {
                         block.DeleteBlock();
+                        
                     }
                 }
-                
-                
+               
+                return true;
             }
-            else
+            
+        }
+        
+        return false;
+    }
+
+
+
+    public void ShiftDownOneRow()
+    {
+
+        //TO DOO CREATE SHIFTDOWN DATA FUNCTION AND USE MOVE TO TO SHIFT BLOCKS GRACEFULLY
+        //bLOCKS ARE MOVED DATA NEEDS TO MOVE AS WELL
+        //THEN IMPLEMENT COLUMNS(MAYBE)
+        var speed = .05f;
+        var step = speed * Time.deltaTime;
+        var blocksAlive = FindObjectsOfType<Block>();
+
+        var notActiveBlocksAlive = blocksAlive.Where(b => !b.isActive()).ToList();
+
+        if (notActiveBlocksAlive.Count < 1)
+        {
+            return;
+        }
+        
+        foreach (var block in notActiveBlocksAlive)
+        {
+
+            var rowRouded = (float)Math.Round(block.transform.position.y);
+            var fullRound = rowsTwoPlaces.Select(v => (float)Math.Round(v)).ToList();
+            var index = fullRound.IndexOf(rowRouded);
+
+
+            Debug.Log("index of " + rowRouded + "is " + index);
+            if (index > 0)
             {
-                Debug.Log("false");
+
+                var towards = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1],blockZValue);
+                block.transform.position = new Vector3(block.transform.position.x,rowsTwoPlaces[index-1 ],blockZValue);
+                //block.transform.position = Vector3.MoveTowards(block.transform.position,towards,step);
             }
         }
+
+
     }
+
+
+
 
     public void AddToBoundsByColumn(float column, Bounds bounds)
     {
@@ -515,14 +558,5 @@ public class Datamanager : MonoBehaviour
     
 
     
-    public void RemoveFromTopsOfBlockData()
-    {
 
-    }
-
-
-    public void RemoveFromBottomOfBlockData()
-    {
-
-    }
 }
