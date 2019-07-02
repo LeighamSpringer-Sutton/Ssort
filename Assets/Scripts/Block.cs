@@ -161,21 +161,31 @@ public class Block : MonoBehaviour
 
 
     
-
+    private void SnapRowsDownAfterDeletion()
+    {
+        //TODO
+    }
    
+    private void ShiftAllDataDownOneRow()
+    {
+        //TODO
+    }
 
     public void DeleteBlock()
     {
-       
-        Instantiate(particules, new Vector3( transform.position.x, transform.position.y,0),transform.rotation);
-        datamanager.RemoveDataAfterDeletion(transform.position.y, transform.position.x);
+        TriggerParticules();
+        datamanager.RemoveDataAfterDeletion(transform.position.y, transform.position.x, spriteRender.bounds.max, spriteRender.bounds,solution);
         DestroyObject(gameObject);
     }
 
+    private void TriggerParticules()
+    {
+        Instantiate(particules, new Vector3(transform.position.x, transform.position.y, 0), transform.rotation);
+    }
 
-    
 
-    
+
+
 
 
 
@@ -186,7 +196,7 @@ public class Block : MonoBehaviour
         datamanager.AddToGrid(new Vector3((float)Math.Round(currentX), (float)Math.Round(currentY)));
 
         datamanager.AddToTopsOfBlockData(spriteRender.bounds.max);
-        datamanager.AddToBottomsOfBlockData(spriteRender.bounds.min);
+        
         datamanager.AddToBoundsByColumn(transform.position.x, spriteRender.bounds);
         datamanager.AddToSolutionRowsDictionary(transform.position.y, transform.position.x,solution);
         

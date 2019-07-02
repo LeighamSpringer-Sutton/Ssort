@@ -14,7 +14,7 @@ public class Datamanager : MonoBehaviour
     //GENERATE BLOCKS FROM DATAMANAGER TO AVOID DELETING ORIGINAL
     public List<Vector3> postionsOnGrid;
     private List<Vector3> topsOfBlocks;
-    private List<Vector3> BottomOfBlocks;
+    
     private List<Block> blocksOnMap;
     private Dictionary<float, List<Bounds>> boundsByColumn;
     private Dictionary<float, List<Bounds>> boundsByRow;
@@ -58,7 +58,7 @@ public class Datamanager : MonoBehaviour
 
         blocksOnMap = new List<Block>();
         topsOfBlocks = new List<Vector3>();
-        BottomOfBlocks = new List<Vector3>();
+        
         postionsOnGrid = new List<Vector3>();
 
 
@@ -66,17 +66,32 @@ public class Datamanager : MonoBehaviour
 
     }
 
-    public void RemoveDataAfterDeletion(float yPos, float xPos)
+    public void RemoveDataAfterDeletion(float yPos, float xPos,Vector3 maxBounds,Bounds bounds,int solution)
     {
         var xRound = (float )Math.Round(xPos);
         var yRound = (float)Math.Round(yPos);
-        
+        var pointsAsVector = new Vector3(xRound, yRound);
         positionOnGridByRow[yRound].Remove(xRound);
         
-
-        Debug.Log(positionOnGridByColumn[yRound].Count);
         positionOnGridByColumn[xRound].Remove(yRound);
-        Debug.Log(positionOnGridByColumn[yRound].Count);
+       
+        postionsOnGrid.Remove(pointsAsVector);
+        
+        topsOfBlocks.Remove(maxBounds);
+
+        
+        if (boundsByColumn[xRound].Count > 0) {
+
+            boundsByColumn[xRound].Remove(bounds);
+           
+        }
+
+        var blockSolutionIndex = solutionByRow[yRound].IndexOf((int)solution);
+        Debug.Log(solutionByRow[yRound][blockSolutionIndex]);
+        solutionByRow[yRound][blockSolutionIndex] = -1000;
+        Debug.Log(solutionByRow[yRound][blockSolutionIndex]);
+
+
     }
 
     public string GenerateOperand()
@@ -353,8 +368,9 @@ public class Datamanager : MonoBehaviour
     public bool BlockBelow(float column, float bottomOfBlock)
     {
         var col = (float)Math.Round(column);
-        if (boundsByColumn.ContainsKey(col))
+        if (boundsByColumn.ContainsKey(col) && boundsByColumn[col].Count>0)
         {
+
             var maxBlockInRow = boundsByColumn[col].Max(b => b.max.y);
 
             return bottomOfBlock - maxBlockInRow <= bottomVsTopThreshold;
@@ -398,10 +414,7 @@ public class Datamanager : MonoBehaviour
     }
 
 
-    public void AddToBottomsOfBlockData(Vector3 BottomOfBlock)
-    {
-        BottomOfBlocks.Add(BottomOfBlock);
-    }
+   
 
 
 
