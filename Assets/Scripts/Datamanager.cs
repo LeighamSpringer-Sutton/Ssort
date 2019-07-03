@@ -31,12 +31,14 @@ public class Datamanager : MonoBehaviour
     private float bottomVsTopThreshold = 0.1f;
     private int numberOfBlocksSpawned = 1;
     private int spawnCount = 0;
+    private IEnumerator coroutine;
+    private bool coroutineActive = false;
     void Start()
 
     {
 
 
-
+        
         upComingEquations = new List<int[]>();
         upComingSigns = new List<string>();
 
@@ -326,7 +328,7 @@ public class Datamanager : MonoBehaviour
         //TO DOO CREATE SHIFTDOWN DATA FUNCTION AND USE MOVE TO TO SHIFT BLOCKS GRACEFULLY
         //bLOCKS ARE MOVED DATA NEEDS TO MOVE AS WELL
         //THEN IMPLEMENT COLUMNS(MAYBE)
-        var speed = .05f;
+        var speed = 1f;
         var step = speed * Time.deltaTime;
         var blocksAlive = FindObjectsOfType<Block>();
 
@@ -350,17 +352,55 @@ public class Datamanager : MonoBehaviour
             {
 
                 var towards = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1],blockZValue);
-                block.transform.position = new Vector3(block.transform.position.x,rowsTwoPlaces[index-1 ],blockZValue);
-                //block.transform.position = Vector3.MoveTowards(block.transform.position,towards,step);
+
+
+
+                //var yReduced = block.transform.position.y - 0.01f;
+
+                var begin = 2.0f;
+                while (begin > 0)
+                {
+                    block.transform.position = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1] + begin, blockZValue);
+                    begin -= 0.01f;
+                }
+                block.transform.position = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1], blockZValue);
+                
+                
+                
+
+                
+                //block.transform.position = Vector3.MoveTowards(block.transform.position,towards,speed);
             }
         }
 
 
     }
+    
 
 
+    IEnumerator MoveToPoint(Block block, float toShift, int index)
+    {
+        coroutineActive = true;
+        
+        
+        float speed =1f;
+        //small number to make it smooth, 0.04 makes it execute 25 times / sec
+
+        
+        var towards = new Vector3(block.transform.position.x, toShift, blockZValue);
+        //use WaitForSecondsRealtime if you want it to be unaffected by timescale
+        float step = speed ;
+        
+
+        block.transform.position = Vector3.MoveTowards(block.transform.position, towards, step);
+        Debug.Log("working");
+        
+        
+        yield return new WaitForSeconds(0.01f);
+        //add a check here or in the "while" to break out of the loop!
 
 
+    }
     public void AddToBoundsByColumn(float column, Bounds bounds)
     {
         var col = (float)Math.Round(column);
