@@ -106,7 +106,7 @@ public class Block : MonoBehaviour
         }
 
 
-        if (!active)
+        if (!active && !shiftBlock)
         {
             if (color.a != 1.0)
             {
@@ -138,6 +138,8 @@ public class Block : MonoBehaviour
 
             if (datamanager.CheckForMathes(transform.position.y, transform.position.x))
             {
+                //datamanager.ShiftDataDownOnerow();
+
                 datamanager.ShiftDownOneRow();
             }
             
