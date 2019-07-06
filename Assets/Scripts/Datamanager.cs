@@ -354,22 +354,8 @@ public class Datamanager : MonoBehaviour
                 var towards = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1],blockZValue);
 
 
-
-                //var yReduced = block.transform.position.y - 0.01f;
-
-                var begin = 2.0f;
-                while (begin > 0)
-                {
-                    block.transform.position = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1] + begin, blockZValue);
-                    begin -= 0.01f;
-                }
-                block.transform.position = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1], blockZValue);
-                
-                
-                
-
-                
-                //block.transform.position = Vector3.MoveTowards(block.transform.position,towards,speed);
+                block.ShiftBlock(towards);
+               
             }
         }
 
@@ -378,29 +364,7 @@ public class Datamanager : MonoBehaviour
     
 
 
-    IEnumerator MoveToPoint(Block block, float toShift, int index)
-    {
-        coroutineActive = true;
-        
-        
-        float speed =1f;
-        //small number to make it smooth, 0.04 makes it execute 25 times / sec
-
-        
-        var towards = new Vector3(block.transform.position.x, toShift, blockZValue);
-        //use WaitForSecondsRealtime if you want it to be unaffected by timescale
-        float step = speed ;
-        
-
-        block.transform.position = Vector3.MoveTowards(block.transform.position, towards, step);
-        Debug.Log("working");
-        
-        
-        yield return new WaitForSeconds(0.01f);
-        //add a check here or in the "while" to break out of the loop!
-
-
-    }
+    
     public void AddToBoundsByColumn(float column, Bounds bounds)
     {
         var col = (float)Math.Round(column);
