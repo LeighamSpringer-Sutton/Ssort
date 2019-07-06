@@ -31,7 +31,7 @@ public class Block : MonoBehaviour
     private SpriteRenderer  spriteRender;
     private DateTime blinkTimeStamp ;
     private Datamanager datamanager;
-    private float blockZValue = 2f;
+    private float blockZValue = 3f;
     private UnityEngine.Object[] blocksOnMap;
     private float SecondColumnConfirm = 1;
     private int IgnoreFirstTrue =1;
@@ -39,6 +39,10 @@ public class Block : MonoBehaviour
     private string textLeftMargin;
     private int solution;
     private int blockCreated=0;
+    private bool shiftBlock = false;
+    private float shiftSpeed = 1.0f;
+    private Vector3 whereToShift;
+
     public void OnBlockCreation()
     {
         //if bottom of block not hit keep block falling
@@ -86,6 +90,20 @@ public class Block : MonoBehaviour
         
 
         equationText.transform.position = transform.position;
+
+
+        if (shiftBlock)
+        {
+            equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
+            if ( whereToShift.y==transform.position.y)
+            {
+                
+                shiftBlock = false;
+            }
+            
+
+        }
 
 
         if (!active)
@@ -165,6 +183,16 @@ public class Block : MonoBehaviour
 
 
     }
+
+    
+
+    public void ShiftBlock(Vector3 whereTo)
+    {
+        whereToShift = whereTo;
+
+        shiftBlock = true;
+    }
+
 
     public bool isActive()
     {
