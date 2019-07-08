@@ -54,7 +54,7 @@ public class Datamanager : MonoBehaviour
         GenerateTwoEquations();
         rows = new List<float> { 2, 4, 7, 9 };
         columns = new List<float> { 2, 4, 7, 9, 12 };
-        rowsTwoPlaces = new List<float> { 1.51f, 4.17f,6.83f, 9.49f};
+        rowsTwoPlaces = new List<float> { 1.52f, 4.17f,6.83f, 9.49f};
 
         
 
@@ -432,7 +432,7 @@ public class Datamanager : MonoBehaviour
             {
 
                 var towards = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1],blockZValue);
-
+                
 
                 block.ShiftBlock(towards);
                

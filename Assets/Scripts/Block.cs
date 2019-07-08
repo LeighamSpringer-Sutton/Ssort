@@ -41,7 +41,11 @@ public class Block : MonoBehaviour
     private int blockCreated=0;
     private bool shiftBlock = false;
     private float shiftSpeed = 1.0f;
+    private float textZvalue = -2f;
     private Vector3 whereToShift;
+
+
+    //CREATE A METHOD TO SHIFT DOWN ALL DATA BUT PRIOR TO THAT REMOVE ALL BOUNDS BOUNDS CHANGE BASED OFF NEW X AND YS
 
     public void OnBlockCreation()
     {
@@ -85,27 +89,34 @@ public class Block : MonoBehaviour
     void Update()
     {
 
+
+
+
+
+
+        
         
 
         
-
         equationText.transform.position = transform.position;
-
-
+        
         if (shiftBlock)
         {
-            equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
+            
+            
             transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
+            equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
             if ( whereToShift.y==transform.position.y)
             {
-                
+                transform.position = whereToShift;
+                equationText.transform.position = whereToShift;
                 shiftBlock = false;
             }
             
 
         }
 
-
+       
         if (!active && !shiftBlock)
         {
             if (color.a != 1.0)
@@ -117,7 +128,7 @@ public class Block : MonoBehaviour
         }
 
         
-        if (currentTimeOfLowerPortionOfBlockHit != DateTime.MinValue && TimeInSecondsPast(currentTimeOfLowerPortionOfBlockHit, 2) && (lowerWallHit || IgnoreFirstTrue>1))
+        if (currentTimeOfLowerPortionOfBlockHit != DateTime.MinValue && TimeInSecondsPast(currentTimeOfLowerPortionOfBlockHit, 2) && (lowerWallHit || IgnoreFirstTrue>1) && !shiftBlock)
         {
             
             
@@ -139,8 +150,10 @@ public class Block : MonoBehaviour
             if (datamanager.CheckForMathes(transform.position.y, transform.position.x))
             {
                 //datamanager.ShiftDataDownOnerow();
-
                 datamanager.ShiftDownOneRow();
+                Debug.Log(whereToShift.y);
+                //transform.position = whereToShift;
+                
             }
             
             
@@ -157,7 +170,7 @@ public class Block : MonoBehaviour
         {
             Gravity();
         }
-        else if (lowerWallHit || BottomBlockHit() )
+        else if (lowerWallHit || BottomBlockHit() && !shiftBlock)
         {
             ActiveBlink();
         }
