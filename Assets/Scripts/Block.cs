@@ -28,6 +28,7 @@ public class Block : MonoBehaviour
     private DateTime currentTimeOfLowerPortionOfBlockHit;
     private float bottomOfMap = 1.52f;
     private Color color;
+    private Color textColor;
     private SpriteRenderer  spriteRender;
     private DateTime blinkTimeStamp ;
     private Datamanager datamanager;
@@ -79,13 +80,14 @@ public class Block : MonoBehaviour
         solution = datamanager.ComputeSolution(equation[0], equation[1],sign);
         spriteRender.sprite = allBocks[Random.Range(0,10)];
         color = spriteRender.color;
+        textColor = equationText.color;
 
 
-        active = true;
+       active = true;
     }
 
     // Update is called once per frame
-    
+
     void Update()
     {
 
@@ -94,12 +96,17 @@ public class Block : MonoBehaviour
 
 
 
-        
-        
+
+
+
+
+
+        equationText.transform.position = transform.position;
+
+
 
         
-        equationText.transform.position = transform.position;
-        
+
         if (shiftBlock)
         {
             
@@ -111,6 +118,9 @@ public class Block : MonoBehaviour
                 transform.position = whereToShift;
                 equationText.transform.position = whereToShift;
                 shiftBlock = false;
+                datamanager.UpDateShifting(false);
+                StoreBlcokData(transform.position.x,transform.position.y);
+                datamanager.CreateNewBlock();
             }
             
 
@@ -122,7 +132,7 @@ public class Block : MonoBehaviour
             if (color.a != 1.0)
             {
                 color.a = 1.0f;
-                spriteRender.color = color;
+                
             }
             return;
         }
@@ -146,52 +156,73 @@ public class Block : MonoBehaviour
 
             StoreBlcokData(transform.position.x,transform.position.y);
 
-
+            active = false;
             if (datamanager.CheckForMathes(transform.position.y, transform.position.x))
             {
                 //datamanager.ShiftDataDownOnerow();
                 datamanager.ShiftDownOneRow();
+                datamanager.clearMap();
                 Debug.Log(whereToShift.y);
-                //transform.position = whereToShift;
                 
+
+                //if row row cleared is higher than minimum x
+
+                //transform.position = whereToShift;
+
             }
+
+
+            else
+            {
+                color.a = 1.0f;
+                spriteRender.color = color;
+                datamanager.CreateNewBlock();
+            }
+
             
             
             
 
-            active = false;
-            color.a = 1.0f;
-            spriteRender.color = color;
-            datamanager.CreateNewBlock();
-            
-
         }
-        if (!lowerWallHit && !BottomBlockHit())
-        {
-            Gravity();
-        }
-        else if (lowerWallHit || BottomBlockHit() && !shiftBlock)
-        {
-            ActiveBlink();
-        }
-        PlayerKeyListner();
-
 
 
         
-        if (BottomBlockHit())
-            {
+
+
+
+        else if  (isActive() )
+        {
             
 
-            if (!timeTriggered && IgnoreFirstTrue > 1)
+            if (!lowerWallHit && !BottomBlockHit())
             {
-                currentTimeOfLowerPortionOfBlockHit = DateTime.Now;
-                timeTriggered = true;
-                Debug.Log("Hit bottom");
+                Gravity();
             }
-            
+            else if (lowerWallHit || BottomBlockHit() && !shiftBlock)
+            {
+                ActiveBlink();
+            }
+
+
+            PlayerKeyListner();
+
+
+
+
+            if (BottomBlockHit())
+            {
+
+
+                if (!timeTriggered && IgnoreFirstTrue > 1)
+                {
+                    currentTimeOfLowerPortionOfBlockHit = DateTime.Now;
+                    timeTriggered = true;
+                    Debug.Log("Hit bottom");
+                }
+
+            }
+
         }
-            
         
         
         

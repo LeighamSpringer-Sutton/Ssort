@@ -32,7 +32,7 @@ public class Datamanager : MonoBehaviour
     private int numberOfBlocksSpawned = 1;
     private int spawnCount = 0;
     private float prevDeletedRow = 0;
-
+    private bool shiftingInProgress = false;
     
     void Start()
 
@@ -68,7 +68,15 @@ public class Datamanager : MonoBehaviour
         CreateNewBlock();
 
     }
+    public void UpDateShifting(bool inProgress)
+    {
+        shiftingInProgress = inProgress;
+    }
 
+    public bool CurrentlyShifting()
+    {
+        return shiftingInProgress;
+    }
 
     public void clearMap()
     {
@@ -81,6 +89,12 @@ public class Datamanager : MonoBehaviour
         CreateColumnsDictionary();
         CreateSolutionsByRowsDictionary();
         GenerateTwoEquations();
+
+        blocksOnMap = new List<Block>();
+        topsOfBlocks = new List<Vector3>();
+
+        postionsOnGrid = new List<Vector3>();
+
     }
     public void RemoveDataAfterDeletion(float yPos, float xPos,Vector3 maxBounds,Bounds bounds,int solution)
     {
@@ -432,8 +446,8 @@ public class Datamanager : MonoBehaviour
             {
 
                 var towards = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1],blockZValue);
-                
 
+                UpDateShifting(true);
                 block.ShiftBlock(towards);
                
             }
