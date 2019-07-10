@@ -14,7 +14,7 @@ public class Datamanager : MonoBehaviour
     //GENERATE BLOCKS FROM DATAMANAGER TO AVOID DELETING ORIGINAL
     public List<Vector3> postionsOnGrid;
     private List<Vector3> topsOfBlocks;
-    
+
     private List<Block> blocksOnMap;
     private Dictionary<float, List<Bounds>> boundsByColumn;
     private Dictionary<float, List<Bounds>> boundsByRow;
@@ -33,17 +33,18 @@ public class Datamanager : MonoBehaviour
     private int spawnCount = 0;
     private float prevDeletedRow = 0;
     private bool shiftingInProgress = false;
-    
+    private int blocksMoved;
+    private bool rowCleared = false;
     void Start()
 
     {
 
 
-        
+
         upComingEquations = new List<int[]>();
         upComingSigns = new List<string>();
 
-        solutionByRow = new Dictionary<float,List<int>>();
+        solutionByRow = new Dictionary<float, List<int>>();
         boundsByColumn = new Dictionary<float, List<Bounds>>();
         boundsByRow = new Dictionary<float, List<Bounds>>();
         positionOnGridByRow = new Dictionary<float, List<float>>();
@@ -54,20 +55,45 @@ public class Datamanager : MonoBehaviour
         GenerateTwoEquations();
         rows = new List<float> { 2, 4, 7, 9 };
         columns = new List<float> { 2, 4, 7, 9, 12 };
-        rowsTwoPlaces = new List<float> { 1.52f, 4.17f,6.83f, 9.49f};
+        rowsTwoPlaces = new List<float> { 1.52f, 4.17f, 6.83f, 9.49f };
 
-        
+
 
 
         blocksOnMap = new List<Block>();
         topsOfBlocks = new List<Vector3>();
-        
+
         postionsOnGrid = new List<Vector3>();
 
 
         CreateNewBlock();
 
     }
+    void Update()
+    {
+        if (rowCleared)
+        {
+            
+        }
+
+
+    }
+    
+
+    public void UpdateBlocksMoved()
+    {
+        blocksMoved++;
+    }
+    public void ResetBlocksMoved()
+    {
+        blocksMoved = 0;
+    }
+
+    public int GetBlocksMoved()
+    {
+        return blocksMoved;
+    }
+
     public void UpDateShifting(bool inProgress)
     {
         shiftingInProgress = inProgress;
@@ -96,45 +122,54 @@ public class Datamanager : MonoBehaviour
         postionsOnGrid = new List<Vector3>();
 
     }
-    public void RemoveDataAfterDeletion(float yPos, float xPos,Vector3 maxBounds,Bounds bounds,int solution)
+    public void RemoveDataAfterDeletion(float yPos, float xPos, Vector3 maxBounds, Bounds bounds, int solution,bool shiftDelete)
     {
-        var xRound = (float )Math.Round(xPos);
+        var xRound = (float)Math.Round(xPos);
         var yRound = (float)Math.Round(yPos);
         var pointsAsVector = new Vector3(xRound, yRound);
 
         //tomove
         positionOnGridByRow[yRound].Remove(xRound);
-        
+
 
 
 
 
         positionOnGridByColumn[xRound].Remove(yRound);
-       
+
         postionsOnGrid.Remove(pointsAsVector);
-        
+
         ///tomove
         topsOfBlocks.Remove(maxBounds);
 
         //tomove
-        if (boundsByColumn[xRound].Count > 0) {
+        if (boundsByColumn[xRound].Count > 0)
+        {
 
             boundsByColumn[xRound].Remove(bounds);
-           
+
         }
         //tomove
         var blockSolutionIndex = solutionByRow[yRound].IndexOf((int)solution);
 
 
-        Debug.Log(solution);
+        Debug.Log("The index is " + blockSolutionIndex);
 
+        if (blockSolutionIndex != -1)
+        {
 
+       
         solutionByRow[yRound][blockSolutionIndex] = -1000;
+        }
 
 
-        prevDeletedRow = yPos;
+        if (!shiftDelete)
+        {
 
 
+            prevDeletedRow = yPos;
+
+        }
 
     }
 
@@ -150,7 +185,7 @@ public class Datamanager : MonoBehaviour
         var xRound = (float)Math.Round(xPos);
         var yRound = (float)Math.Round(yPos);
         var pointsAsVector = new Vector3(xRound, yRound);
-        
+
         var prevDelRowRound = (float)Math.Round(prevDeletedRow);
         if (prevDeletedRow > yPos)
         {
@@ -169,7 +204,7 @@ public class Datamanager : MonoBehaviour
 
 
         ///add the row below, remove the current row
-        
+
 
         positionOnGridByColumn[xRound].Add(rowBelow);
         positionOnGridByColumn[xRound].Remove(yRound);
@@ -188,7 +223,7 @@ public class Datamanager : MonoBehaviour
         solutionByRow[yRound][blockSolutionIndex] = -1000;
 
 
-}
+    }
 
     public string GenerateOperand()
     {
@@ -220,7 +255,7 @@ public class Datamanager : MonoBehaviour
     public int[] PullEquation()
     {
 
-       
+
         var num1 = upComingEquations[upComingEquations.Count - 1][0];
         var num2 = upComingEquations[upComingEquations.Count - 1][1];
         upComingEquations.RemoveAt(upComingEquations.Count - 1);
@@ -228,7 +263,7 @@ public class Datamanager : MonoBehaviour
         {
             Debug.Log("upcoming is " + upComingEquations[0][0] + upComingSigns[0] + upComingEquations[0][1]);
         }
-               
+
         else if (upComingEquations.Count == 0)
         {
             GenerateTwoEquations();
@@ -300,7 +335,7 @@ public class Datamanager : MonoBehaviour
 
     public void CreateSolutionsByRowsDictionary()
     {
-        
+
         solutionByRow.Add(2, new List<int> { -1000, -1000, -1000, -1000, -1000 });
         solutionByRow.Add(4, new List<int> { -1000, -1000, -1000, -1000, -1000 });
         solutionByRow.Add(7, new List<int> { -1000, -1000, -1000, -1000, -1000 });
@@ -327,7 +362,7 @@ public class Datamanager : MonoBehaviour
     }
 
 
-    public void AddToSolutionRowsDictionary(float row,float column,int solution)
+    public void AddToSolutionRowsDictionary(float row, float column, int solution)
     {
 
         //all additons to solutions dictionary must use a switch statement and take the columsn into account
@@ -335,7 +370,7 @@ public class Datamanager : MonoBehaviour
 
         var currentRow = solutionByRow[(float)Math.Round(row)];
 
-        var len  = solutionByRow[(float)Math.Round(row)].Count;
+        var len = solutionByRow[(float)Math.Round(row)].Count;
 
         switch (columnRounded)
         {
@@ -362,22 +397,22 @@ public class Datamanager : MonoBehaviour
     public void AddToColumnsDictionary(Vector3 blockPosition)
     {
 
-        
+
         positionOnGridByColumn[(float)Math.Round(blockPosition.x)].Add((float)Math.Round(blockPosition.y));
 
-        
+
     }
 
 
     public void AddToRowsDictionary(Vector3 blockPosition)
     {
-        
+
         positionOnGridByRow[(float)Math.Round(blockPosition.y)].Add((float)Math.Round(blockPosition.x));
 
 
     }
 
-    public bool CheckForMathes(float row,float xPos)
+    public bool CheckForMathes(float row, float xPos)
     {
 
         var rowRounded = (float)Math.Round(row);
@@ -396,21 +431,29 @@ public class Datamanager : MonoBehaviour
             if (rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions))
             {
                 var blocksSpwaned = FindObjectsOfType<Block>();
-
+                
+                //positionOnGridByColumn[(float)Math.Round(column)].Remove((float)Math.Round(row));
+                //positionOnGridByRow[(float)Math.Round(row)].Remove((float)Math.Round(column));
+                
                 foreach (var block in blocksSpwaned)
                 {
-                    if ((float) Math.Round(block.transform.position.y) == rowRounded)
+
+                    var currentRow = (float)Math.Round(block.transform.position.y);
+                    var currentColumn = (float)Math.Round(block.transform.position.x);
+                    if (currentRow == rowRounded)
                     {
-                        block.DeleteBlock();
+
                         
+                        block.DeleteBlock();
+
                     }
                 }
-               
+
                 return true;
             }
-            
+
         }
-        
+
         return false;
     }
 
@@ -428,11 +471,11 @@ public class Datamanager : MonoBehaviour
 
         var notActiveBlocksAlive = blocksAlive.Where(b => !b.isActive()).ToList();
 
-        if (notActiveBlocksAlive.Count < 1)
+        if (notActiveBlocksAlive.Count < 1 || notActiveBlocksAlive.Count ==6)
         {
             return;
         }
-        
+       
         foreach (var block in notActiveBlocksAlive)
         {
 
@@ -441,23 +484,26 @@ public class Datamanager : MonoBehaviour
             var index = fullRound.IndexOf(rowRouded);
 
 
-            
+
             if (index > 0)
             {
-
-                var towards = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1],blockZValue);
+                Debug.Log("shifting is hapeningss");
+                var towards = new Vector3(block.transform.position.x, rowsTwoPlaces[index - 1], blockZValue);
 
                 UpDateShifting(true);
                 block.ShiftBlock(towards);
-               
+                RemoveDataAfterDeletion(block.transform.position.y, block.transform.position.x, block.spriteRender.bounds.max, block.spriteRender.bounds, block.solution, false);
+
+
+
             }
         }
 
 
     }
-    
-   
-    
+
+
+
     public void AddToBoundsByColumn(float column, Bounds bounds)
     {
         var col = (float)Math.Round(column);
@@ -494,7 +540,7 @@ public class Datamanager : MonoBehaviour
     {
         var m = (float)Math.Round(movement);
 
-        if (boundsByColumn.ContainsKey(m))
+        if (boundsByColumn.ContainsKey(m) && boundsByColumn[m].Count!=0)
         {
             var maxBlockInRow = boundsByColumn[m].Max(b => b.max.y);
 
@@ -508,7 +554,7 @@ public class Datamanager : MonoBehaviour
     public bool BlockBelow(float column, float bottomOfBlock)
     {
         var col = (float)Math.Round(column);
-        if (boundsByColumn.ContainsKey(col) && boundsByColumn[col].Count>0)
+        if (boundsByColumn.ContainsKey(col) && boundsByColumn[col].Count > 0)
         {
 
             var maxBlockInRow = boundsByColumn[col].Max(b => b.max.y);
@@ -554,7 +600,7 @@ public class Datamanager : MonoBehaviour
     }
 
 
-   
+
 
 
 
@@ -619,16 +665,16 @@ public class Datamanager : MonoBehaviour
     }
 
 
-   
+
 
 
     //finish
 
-    
-        
-    
-    
-    public float SnapToBottom(float lowerWall, float xPos,float yPos,float bottomOfBlock)
+
+
+
+
+    public float SnapToBottom(float lowerWall, float xPos, float yPos, float bottomOfBlock)
     {
 
         //use already built in function for checking block below and then use row array to go one index lower for x value
@@ -638,22 +684,22 @@ public class Datamanager : MonoBehaviour
         //Debug.Log(xPosR);
         if (yPosR != lowerWall && ColumnEmpty(xPosR))
         {
-            return lowerWall ;
+            return lowerWall;
         }
-        
-        else if (yPos != lowerWall && !ColumnEmpty(xPosR) )
+
+        else if (yPos != lowerWall && !ColumnEmpty(xPosR))
         {
 
             var currentMaxRow = positionOnGridByColumn[xPosR].Max();
             //Debug.Log(currentMaxRow);
-            
-            return rowsTwoPlaces[rows.IndexOf(currentMaxRow)+1];
+
+            return rowsTwoPlaces[rows.IndexOf(currentMaxRow) + 1];
         }
-        
+
         return yPos;
     }
-    
 
-    
+
+
 
 }
