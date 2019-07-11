@@ -45,7 +45,7 @@ public class Block : MonoBehaviour
     private float textZvalue = -2f;
     private Vector3 whereToShift;
     private int blocksMoved = 0;
-    
+
 
     //CREATE A METHOD TO SHIFT DOWN ALL DATA BUT PRIOR TO THAT REMOVE ALL BOUNDS BOUNDS CHANGE BASED OFF NEW X AND YS
 
@@ -119,36 +119,27 @@ public class Block : MonoBehaviour
             equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
             if (whereToShift.y == transform.position.y)
             {
-                
-                datamanager.UpdateBlocksMoved();
+
                 transform.position = whereToShift;
                 equationText.transform.position = whereToShift;
                 shiftBlock = false;
-                datamanager.UpDateShifting(false);
-                StoreBlcokData(transform.position.x, transform.position.y);
-                //two blocks are being produced fix problem
-                //REMEMBER ONLY BLOCKS THAT ARE SHIFTED ARE STORED
-                var allBlocks = FindObjectsOfType<Block>();
 
-                var blocksShifting = allBlocks.Select(b => b.shiftBlock);
-
-
-                
+                /*
                 if (!blocksShifting.Contains(true))
                 {
 
-                    
+
                     datamanager.CreateNewBlock();
                     datamanager.ResetBlocksMoved();
                 }
-
+                */
 
             }
 
-            
-            
-             
-            
+
+
+
+
         }
 
 
@@ -190,15 +181,16 @@ public class Block : MonoBehaviour
 
 
                 //datamanager.clearMap();
-                
 
-                
+
+                /*
                 if (!datamanager.CurrentlyShifting())
                 {
 
                     Debug.Log("Not shifting");
                     datamanager.CreateNewBlock();
                 }
+                */
                 //Create block when row cleared if row isn't shifted
 
             }
@@ -207,10 +199,10 @@ public class Block : MonoBehaviour
             else
             {
 
-            datamanager.CreateNewBlock();
-            color.a = 1.0f;
-            spriteRender.color = color;
-            
+                datamanager.CreateNewBlock();
+                color.a = 1.0f;
+                spriteRender.color = color;
+
             }
 
 
@@ -252,7 +244,7 @@ public class Block : MonoBehaviour
                 {
                     currentTimeOfLowerPortionOfBlockHit = DateTime.Now;
                     timeTriggered = true;
-                    
+
                 }
 
             }
@@ -290,7 +282,7 @@ public class Block : MonoBehaviour
     public void DeleteBlock()
     {
         TriggerParticules();
-        datamanager.RemoveDataAfterDeletion(transform.position.y, transform.position.x, spriteRender.bounds.max, spriteRender.bounds, solution,false);
+        datamanager.RemoveDataAfterDeletion(transform.position.y, transform.position.x, spriteRender.bounds.max, spriteRender.bounds, solution, false);
         DestroyObject(gameObject);
 
     }
@@ -365,7 +357,7 @@ public class Block : MonoBehaviour
 
             if (datamanager.PotentialOverlapDetected(totalAmountToMove, spriteRender.bounds.min.y))
             {
-                
+
                 return;
             }
             transform.position = new Vector3(totalAmountToMove, transform.position.y);
@@ -384,7 +376,7 @@ public class Block : MonoBehaviour
 
             if (datamanager.PotentialOverlapDetected(totalAmountToMove, spriteRender.bounds.min.y))
             {
-               
+
                 return;
             }
 

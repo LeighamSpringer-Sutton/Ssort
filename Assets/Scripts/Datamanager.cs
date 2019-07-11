@@ -73,12 +73,12 @@ public class Datamanager : MonoBehaviour
     {
         if (rowCleared)
         {
-            
+
         }
 
 
     }
-    
+
 
     public void UpdateBlocksMoved()
     {
@@ -122,7 +122,7 @@ public class Datamanager : MonoBehaviour
         postionsOnGrid = new List<Vector3>();
 
     }
-    public void RemoveDataAfterDeletion(float yPos, float xPos, Vector3 maxBounds, Bounds bounds, int solution,bool shiftDelete)
+    public void RemoveDataAfterDeletion(float yPos, float xPos, Vector3 maxBounds, Bounds bounds, int solution, bool shiftDelete)
     {
         var xRound = (float)Math.Round(xPos);
         var yRound = (float)Math.Round(yPos);
@@ -158,8 +158,8 @@ public class Datamanager : MonoBehaviour
         if (blockSolutionIndex != -1)
         {
 
-       
-        solutionByRow[yRound][blockSolutionIndex] = -1000;
+
+            solutionByRow[yRound][blockSolutionIndex] = -1000;
         }
 
 
@@ -431,10 +431,10 @@ public class Datamanager : MonoBehaviour
             if (rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions))
             {
                 var blocksSpwaned = FindObjectsOfType<Block>();
-                
+
                 //positionOnGridByColumn[(float)Math.Round(column)].Remove((float)Math.Round(row));
                 //positionOnGridByRow[(float)Math.Round(row)].Remove((float)Math.Round(column));
-                
+
                 foreach (var block in blocksSpwaned)
                 {
 
@@ -443,7 +443,7 @@ public class Datamanager : MonoBehaviour
                     if (currentRow == rowRounded)
                     {
 
-                        
+
                         block.DeleteBlock();
 
                     }
@@ -470,12 +470,14 @@ public class Datamanager : MonoBehaviour
         var blocksAlive = FindObjectsOfType<Block>();
 
         var notActiveBlocksAlive = blocksAlive.Where(b => !b.isActive()).ToList();
-
-        if (notActiveBlocksAlive.Count < 1 || notActiveBlocksAlive.Count ==6)
+        var blocksAboveShiftedRow = blocksAlive.Where(b => b.transform.position.y > prevDeletedRow);
+        if (  blocksAboveShiftedRow.Count() ==0)
         {
+            Debug.Log("function cancel");
+            CreateNewBlock();
             return;
         }
-       
+        
         foreach (var block in notActiveBlocksAlive)
         {
 
@@ -483,8 +485,8 @@ public class Datamanager : MonoBehaviour
             var fullRound = rowsTwoPlaces.Select(v => (float)Math.Round(v)).ToList();
             var index = fullRound.IndexOf(rowRouded);
 
-
-
+            
+            Debug.Log("the index is " + index + "the row rounded is " + rowRouded + "the solution is " + block.solution);
             if (index > 0)
             {
                 Debug.Log("shifting is hapeningss");
@@ -540,7 +542,7 @@ public class Datamanager : MonoBehaviour
     {
         var m = (float)Math.Round(movement);
 
-        if (boundsByColumn.ContainsKey(m) && boundsByColumn[m].Count!=0)
+        if (boundsByColumn.ContainsKey(m) && boundsByColumn[m].Count != 0)
         {
             var maxBlockInRow = boundsByColumn[m].Max(b => b.max.y);
 
