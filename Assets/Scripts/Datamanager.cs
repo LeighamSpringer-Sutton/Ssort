@@ -34,7 +34,8 @@ public class Datamanager : MonoBehaviour
     private float prevDeletedRow = 0;
     private bool shiftingInProgress = false;
     private int blocksMoved;
-    private bool rowCleared = false;
+    public bool rowCleared = false;
+    public bool shiftingFunctionFinished= false;
     void Start()
 
     {
@@ -73,7 +74,8 @@ public class Datamanager : MonoBehaviour
     {
         if (rowCleared)
         {
-
+            ShiftDownOneRow();
+            rowCleared = false;
         }
 
 
@@ -477,16 +479,19 @@ public class Datamanager : MonoBehaviour
             CreateNewBlock();
             return;
         }
-        
-        foreach (var block in notActiveBlocksAlive)
+
+
+        Debug.Log("Blocs above are " + blocksAboveShiftedRow.Count());
+        foreach (var block in blocksAboveShiftedRow)
         {
+            Debug.Log("function ran");
 
             var rowRouded = (float)Math.Round(block.transform.position.y);
             var fullRound = rowsTwoPlaces.Select(v => (float)Math.Round(v)).ToList();
             var index = fullRound.IndexOf(rowRouded);
 
-            
-            Debug.Log("the index is " + index + "the row rounded is " + rowRouded + "the solution is " + block.solution);
+
+            Debug.Log(index > 0);
             if (index > 0)
             {
                 Debug.Log("shifting is hapeningss");
@@ -494,19 +499,20 @@ public class Datamanager : MonoBehaviour
 
                 UpDateShifting(true);
                 block.ShiftBlock(towards);
-                RemoveDataAfterDeletion(block.transform.position.y, block.transform.position.x, block.spriteRender.bounds.max, block.spriteRender.bounds, block.solution, false);
+                RemoveDataAfterDeletion(block.transform.position.y, block.transform.position.x, block.spriteRender.bounds.max, block.spriteRender.bounds, block.solution, true);
 
 
 
             }
         }
 
+      shiftingFunctionFinished = true;
 
-    }
+}
 
 
 
-    public void AddToBoundsByColumn(float column, Bounds bounds)
+public void AddToBoundsByColumn(float column, Bounds bounds)
     {
         var col = (float)Math.Round(column);
         if (!boundsByColumn.ContainsKey(col))

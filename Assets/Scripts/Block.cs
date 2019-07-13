@@ -111,7 +111,7 @@ public class Block : MonoBehaviour
 
 
 
-        if (shiftBlock)
+        if (shiftBlock && datamanager.shiftingFunctionFinished)
         {
 
 
@@ -176,22 +176,9 @@ public class Block : MonoBehaviour
             if (datamanager.CheckForMathes(transform.position.y, transform.position.x))
             {
                 //datamanager.ShiftDataDownOnerow();
-                datamanager.ShiftDownOneRow();
+                datamanager.rowCleared = true;
 
 
-
-                //datamanager.clearMap();
-
-
-                /*
-                if (!datamanager.CurrentlyShifting())
-                {
-
-                    Debug.Log("Not shifting");
-                    datamanager.CreateNewBlock();
-                }
-                */
-                //Create block when row cleared if row isn't shifted
 
             }
 
