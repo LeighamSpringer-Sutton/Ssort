@@ -44,7 +44,7 @@ public class Block : MonoBehaviour
     private float shiftSpeed = 1.0f;
     private float textZvalue = -2f;
     private Vector3 whereToShift;
-    private int blocksMoved = 0;
+   
 
 
     //CREATE A METHOD TO SHIFT DOWN ALL DATA BUT PRIOR TO THAT REMOVE ALL BOUNDS BOUNDS CHANGE BASED OFF NEW X AND YS
@@ -123,8 +123,14 @@ public class Block : MonoBehaviour
                 transform.position = whereToShift;
                 equationText.transform.position = whereToShift;
                 shiftBlock = false;
+                datamanager.blocksMoved++;
 
-                /*
+                if (datamanager.blocksMoved == datamanager.blocksToMove)
+                {
+                    datamanager.CreateNewBlock();
+                    datamanager.blocksMoved = 0;
+                }
+                /*d
                 if (!blocksShifting.Contains(true))
                 {
 

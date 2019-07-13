@@ -33,7 +33,8 @@ public class Datamanager : MonoBehaviour
     private int spawnCount = 0;
     private float prevDeletedRow = 0;
     private bool shiftingInProgress = false;
-    private int blocksMoved;
+    public int blocksMoved;
+    public int blocksToMove =0;
     public bool rowCleared = false;
     public bool shiftingFunctionFinished= false;
     void Start()
@@ -473,6 +474,8 @@ public class Datamanager : MonoBehaviour
 
         var notActiveBlocksAlive = blocksAlive.Where(b => !b.isActive()).ToList();
         var blocksAboveShiftedRow = blocksAlive.Where(b => b.transform.position.y > prevDeletedRow);
+
+        blocksToMove = blocksAboveShiftedRow.Count();
         if (  blocksAboveShiftedRow.Count() ==0)
         {
             Debug.Log("function cancel");
