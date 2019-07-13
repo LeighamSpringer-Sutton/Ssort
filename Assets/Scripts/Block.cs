@@ -179,7 +179,7 @@ public class Block : MonoBehaviour
             StoreBlcokData(transform.position.x, transform.position.y);
 
             active = false;
-            if (datamanager.CheckForMathes(transform.position.y, transform.position.x))
+            if (datamanager.CheckForMatches(transform.position.y, transform.position.x))
             {
                 //datamanager.ShiftDataDownOnerow();
                 datamanager.rowCleared = true;
@@ -301,6 +301,7 @@ public class Block : MonoBehaviour
 
         datamanager.AddToBoundsByColumn(transform.position.x, spriteRender.bounds);
         datamanager.AddToSolutionRowsDictionary(transform.position.y, transform.position.x, solution);
+        datamanager.AddToSolutionColumnDictionary(transform.position.y, transform.position.x, solution);
 
     }
 

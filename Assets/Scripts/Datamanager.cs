@@ -21,6 +21,7 @@ public class Datamanager : MonoBehaviour
     private Dictionary<float, List<float>> positionOnGridByRow;
     private Dictionary<float, List<float>> positionOnGridByColumn;
     private Dictionary<float, List<int>> solutionByRow;
+    private Dictionary<float, List<int>> solutionByColumn;
     private List<float> rows;
     private List<float> columns;
     private List<float> rowsTwoPlaces;
@@ -34,9 +35,9 @@ public class Datamanager : MonoBehaviour
     private float prevDeletedRow = 0;
     private bool shiftingInProgress = false;
     public int blocksMoved;
-    public int blocksToMove =0;
+    public int blocksToMove = 0;
     public bool rowCleared = false;
-    public bool shiftingFunctionFinished= false;
+    public bool shiftingFunctionFinished = false;
     void Start()
 
     {
@@ -47,13 +48,16 @@ public class Datamanager : MonoBehaviour
         upComingSigns = new List<string>();
 
         solutionByRow = new Dictionary<float, List<int>>();
+        solutionByColumn = new Dictionary<float, List<int>>();
         boundsByColumn = new Dictionary<float, List<Bounds>>();
         boundsByRow = new Dictionary<float, List<Bounds>>();
         positionOnGridByRow = new Dictionary<float, List<float>>();
         positionOnGridByColumn = new Dictionary<float, List<float>>();
+
         CreateRowsDictionary();
         CreateColumnsDictionary();
         CreateSolutionsByRowsDictionary();
+        CreateSolutionByColumnDictionary();
         GenerateTwoEquations();
         rows = new List<float> { 2, 4, 7, 9 };
         columns = new List<float> { 2, 4, 7, 9, 12 };
@@ -110,6 +114,7 @@ public class Datamanager : MonoBehaviour
     public void clearMap()
     {
         solutionByRow = new Dictionary<float, List<int>>();
+        solutionByColumn = new Dictionary<float, List<int>>();
         boundsByColumn = new Dictionary<float, List<Bounds>>();
         boundsByRow = new Dictionary<float, List<Bounds>>();
         positionOnGridByRow = new Dictionary<float, List<float>>();
@@ -155,7 +160,7 @@ public class Datamanager : MonoBehaviour
         //tomove
         var blockSolutionIndex = solutionByRow[yRound].IndexOf((int)solution);
 
-
+        var colSolutionIndex = solutionByColumn[xRound].IndexOf((int)solution);
         Debug.Log("The index is " + blockSolutionIndex);
 
         if (blockSolutionIndex != -1)
@@ -164,7 +169,10 @@ public class Datamanager : MonoBehaviour
 
             solutionByRow[yRound][blockSolutionIndex] = -1000;
         }
-
+        if (colSolutionIndex != -1)
+        {
+            solutionByColumn[xRound][colSolutionIndex] = -1000;
+        }
 
         if (!shiftDelete)
         {
@@ -345,6 +353,15 @@ public class Datamanager : MonoBehaviour
         solutionByRow.Add(9, new List<int> { -1000, -1000, -1000, -1000, -1000 });
 
     }
+
+    public void CreateSolutionByColumnDictionary()
+    {
+        solutionByColumn.Add(2, new List<int> { -1000, -1000, -1000, -1000 });
+        solutionByColumn.Add(4, new List<int> { -1000, -1000, -1000, -1000 });
+        solutionByColumn.Add(7, new List<int> { -1000, -1000, -1000, -1000 });
+        solutionByColumn.Add(9, new List<int> { -1000, -1000, -1000, -1000 });
+        solutionByColumn.Add(12, new List<int> { -1000, -1000, -1000, -1000 });
+    }
     public void CreateRowsDictionary()
     {
         positionOnGridByRow.Add(2, new List<float>());
@@ -364,6 +381,32 @@ public class Datamanager : MonoBehaviour
         positionOnGridByColumn.Add(12, new List<float>());
     }
 
+    public void AddToSolutionColumnDictionary(float row, float column, int solution)
+    {
+        var rowRounded = (float)Math.Round(row);
+
+        var currentCol = solutionByColumn[(float)Math.Round(column)];
+
+
+
+        switch (rowRounded)
+        {
+            case 2:
+                currentCol[0] = solution;
+                break;
+            case 4:
+                currentCol[1] = solution;
+                break;
+            case 7:
+                currentCol[2] = solution;
+                break;
+            case 9:
+                currentCol[3] = solution;
+                break;
+
+        }
+    }
+
 
     public void AddToSolutionRowsDictionary(float row, float column, int solution)
     {
@@ -373,7 +416,7 @@ public class Datamanager : MonoBehaviour
 
         var currentRow = solutionByRow[(float)Math.Round(row)];
 
-        var len = solutionByRow[(float)Math.Round(row)].Count;
+
 
         switch (columnRounded)
         {
@@ -395,7 +438,7 @@ public class Datamanager : MonoBehaviour
         }
 
 
-        //Debug.Log(solutionByRow[(float)Math.Round(row)][len - 1]);
+
     }
     public void AddToColumnsDictionary(Vector3 blockPosition)
     {
@@ -415,21 +458,36 @@ public class Datamanager : MonoBehaviour
 
     }
 
-    public bool CheckForMathes(float row, float xPos)
+    public bool CheckForMatches(float row, float xPos)
     {
 
         var rowRounded = (float)Math.Round(row);
+        var colRounded = (float)Math.Round(xPos);
 
         var currentRowSolutions = solutionByRow[rowRounded];
 
 
-        if (!currentRowSolutions.Contains(-1000))
+        var currentColumnolutions = solutionByColumn[colRounded];
+
+
+        if (!currentRowSolutions.Contains(-1000) || !currentColumnolutions.Contains(-1000))
         {
             var rowCopy = new List<int>(currentRowSolutions);
             var rowCopyRev = new List<int>(currentRowSolutions);
+
+
+            var colCopy = new List<int>(currentColumnolutions);
+            var colCopyRev = new List<int>(currentColumnolutions);
+
+            //sort then revere sort
             rowCopyRev.Sort();
             rowCopyRev.Reverse();
             rowCopy.Sort();
+
+
+            colCopyRev.Sort();
+            colCopyRev.Reverse();
+            colCopy.Sort();
 
             if (rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions))
             {
@@ -450,8 +508,36 @@ public class Datamanager : MonoBehaviour
                         block.DeleteBlock();
 
                     }
+                    
                 }
 
+
+                
+                return true;
+            }
+
+            //FIRGURE OUT WHY ONE BLOCK IS BEING DELETED FROM TOP OF STACK
+            else if (colCopy.SequenceEqual(currentColumnolutions) || colCopyRev.SequenceEqual(currentColumnolutions))
+            {
+                var blocksSpwaned = FindObjectsOfType<Block>();
+
+                //positionOnGridByColumn[(float)Math.Round(column)].Remove((float)Math.Round(row));
+                //positionOnGridByRow[(float)Math.Round(row)].Remove((float)Math.Round(column));
+
+                foreach (var block in blocksSpwaned)
+                {
+
+                    var currentRow = (float)Math.Round(block.transform.position.y);
+                    var currentColumn = (float)Math.Round(block.transform.position.x);
+                    if (currentColumn == colRounded)
+                    {
+
+
+                        block.DeleteBlock();
+
+                    }
+
+                }
                 return true;
             }
 
