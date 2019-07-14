@@ -14,6 +14,8 @@ public class Datamanager : MonoBehaviour
     //GENERATE BLOCKS FROM DATAMANAGER TO AVOID DELETING ORIGINAL
     public List<Vector3> postionsOnGrid;
     private List<Vector3> topsOfBlocks;
+    [SerializeField] private TMPro.TextMeshProUGUI scoreText;
+
 
     private List<Block> blocksOnMap;
     private Dictionary<float, List<Bounds>> boundsByColumn;
@@ -39,6 +41,7 @@ public class Datamanager : MonoBehaviour
     public bool rowCleared = false;
     public bool columnsCleared = false;
     public bool shiftingFunctionFinished = false;
+    public int gameScore;
     void Start()
 
     {
@@ -71,7 +74,7 @@ public class Datamanager : MonoBehaviour
         topsOfBlocks = new List<Vector3>();
 
         postionsOnGrid = new List<Vector3>();
-
+        scoreText.text = "Score :" + " " + gameScore;
 
         CreateNewBlock();
 
@@ -91,6 +94,22 @@ public class Datamanager : MonoBehaviour
         }
     }
 
+
+    public void IncreaseScore(string clearType)
+    {
+
+        if (clearType == "row")
+        {
+            gameScore += 5;
+            scoreText.text = "Score :" + " " + gameScore;
+            return;
+        }
+        
+        gameScore += 4;
+        scoreText.text = "Score :" + " " + gameScore;
+        
+
+    }
 
     public void UpdateBlocksMoved()
     {
@@ -522,7 +541,7 @@ public class Datamanager : MonoBehaviour
                     
                 }
 
-
+                IncreaseScore("row");
                 rowCleared = true;
                 return true;
             }
@@ -550,6 +569,7 @@ public class Datamanager : MonoBehaviour
                     }
 
                 }
+                IncreaseScore("column");
                 columnsCleared = true;
                 return true;
             }

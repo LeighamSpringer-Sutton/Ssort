@@ -183,7 +183,7 @@ public class Block : MonoBehaviour
             if (datamanager.CheckForMatches(transform.position.y, transform.position.x))
             {
                 //datamanager.ShiftDataDownOnerow();
-
+                
 
                 
 
