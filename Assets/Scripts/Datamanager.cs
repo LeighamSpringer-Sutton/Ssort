@@ -463,6 +463,9 @@ public class Datamanager : MonoBehaviour
 
     }
 
+
+   
+
     public bool CheckForMatches(float row, float xPos)
     {
 
@@ -514,7 +517,7 @@ public class Datamanager : MonoBehaviour
 
 
                         block.DeleteBlock();
-
+                        
                     }
                     
                 }

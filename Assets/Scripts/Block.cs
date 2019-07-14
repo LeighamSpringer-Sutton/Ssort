@@ -18,6 +18,8 @@ public class Block : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI equationText;
     //[SerializeField] private Canvas canvas;
     [SerializeField] private GameObject particules;
+
+    
     private float amountToMove = 2.57f;
     private float totalAmountToMove;
     private float screenWidth = 10f;
@@ -92,6 +94,11 @@ public class Block : MonoBehaviour
     {
         return shiftBlock;
     }
+
+    public void DeleteParticle()
+    {
+        DestroyObject(particules);
+    }
     void Update()
     {
 
@@ -132,15 +139,7 @@ public class Block : MonoBehaviour
                     datamanager.CreateNewBlock();
                     datamanager.blocksMoved = 0;
                 }
-                /*d
-                if (!blocksShifting.Contains(true))
-                {
-
-
-                    datamanager.CreateNewBlock();
-                    datamanager.ResetBlocksMoved();
-                }
-                */
+                
 
             }
 
@@ -184,9 +183,9 @@ public class Block : MonoBehaviour
             if (datamanager.CheckForMatches(transform.position.y, transform.position.x))
             {
                 //datamanager.ShiftDataDownOnerow();
+
+
                 
-
-
 
             }
 
@@ -278,13 +277,19 @@ public class Block : MonoBehaviour
     {
         TriggerParticules();
         datamanager.RemoveDataAfterDeletion(transform.position.y, transform.position.x, spriteRender.bounds.max, spriteRender.bounds, solution, false);
+        
         DestroyObject(gameObject);
 
     }
 
+
+   
     private void TriggerParticules()
     {
-        Instantiate(particules, new Vector3(transform.position.x, transform.position.y, 0), transform.rotation);
+        var particle = Instantiate(particules, new Vector3(transform.position.x, transform.position.y, 0), transform.rotation);
+        ParticleSystem parts = particle.GetComponent<ParticleSystem>();
+        float totalDuration = parts.duration + parts.startLifetime;
+        Destroy(particle, totalDuration);
     }
 
 
