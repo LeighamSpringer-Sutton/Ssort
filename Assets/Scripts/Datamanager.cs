@@ -37,6 +37,7 @@ public class Datamanager : MonoBehaviour
     public int blocksMoved;
     public int blocksToMove = 0;
     public bool rowCleared = false;
+    public bool columnsCleared = false;
     public bool shiftingFunctionFinished = false;
     void Start()
 
@@ -83,7 +84,11 @@ public class Datamanager : MonoBehaviour
             rowCleared = false;
         }
 
-
+        if (columnsCleared)
+        {
+            CreateNewBlock();
+            columnsCleared = false;
+        }
     }
 
 
@@ -488,10 +493,13 @@ public class Datamanager : MonoBehaviour
             colCopyRev.Sort();
             colCopyRev.Reverse();
             colCopy.Sort();
+            var blocksSpwaned = FindObjectsOfType<Block>();
 
-            if (rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions))
+            var rowLen = blocksSpwaned.Where(block => (float)Math.Round(block.transform.position.y) == rowRounded).Count();
+            var columnLen = blocksSpwaned.Where(block => (float)Math.Round(block.transform.position.x) == colRounded).Count();
+            if ((rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions)) && rowLen==5)
             {
-                var blocksSpwaned = FindObjectsOfType<Block>();
+                
 
                 //positionOnGridByColumn[(float)Math.Round(column)].Remove((float)Math.Round(row));
                 //positionOnGridByRow[(float)Math.Round(row)].Remove((float)Math.Round(column));
@@ -512,14 +520,14 @@ public class Datamanager : MonoBehaviour
                 }
 
 
-                
+                rowCleared = true;
                 return true;
             }
 
             //FIRGURE OUT WHY ONE BLOCK IS BEING DELETED FROM TOP OF STACK
-            else if (colCopy.SequenceEqual(currentColumnolutions) || colCopyRev.SequenceEqual(currentColumnolutions))
+            else if (colCopy.SequenceEqual(currentColumnolutions) || colCopyRev.SequenceEqual(currentColumnolutions) && columnLen==4)
             {
-                var blocksSpwaned = FindObjectsOfType<Block>();
+                
 
                 //positionOnGridByColumn[(float)Math.Round(column)].Remove((float)Math.Round(row));
                 //positionOnGridByRow[(float)Math.Round(row)].Remove((float)Math.Round(column));
@@ -529,6 +537,7 @@ public class Datamanager : MonoBehaviour
 
                     var currentRow = (float)Math.Round(block.transform.position.y);
                     var currentColumn = (float)Math.Round(block.transform.position.x);
+                    Debug.Log(currentColumn);
                     if (currentColumn == colRounded)
                     {
 
@@ -538,6 +547,7 @@ public class Datamanager : MonoBehaviour
                     }
 
                 }
+                columnsCleared = true;
                 return true;
             }
 

@@ -124,9 +124,11 @@ public class Block : MonoBehaviour
                 equationText.transform.position = whereToShift;
                 shiftBlock = false;
                 datamanager.blocksMoved++;
-
+                StoreBlcokData(transform.position.x, transform.position.y);
                 if (datamanager.blocksMoved == datamanager.blocksToMove)
                 {
+
+                    
                     datamanager.CreateNewBlock();
                     datamanager.blocksMoved = 0;
                 }
@@ -182,7 +184,7 @@ public class Block : MonoBehaviour
             if (datamanager.CheckForMatches(transform.position.y, transform.position.x))
             {
                 //datamanager.ShiftDataDownOnerow();
-                datamanager.rowCleared = true;
+                
 
 
 
