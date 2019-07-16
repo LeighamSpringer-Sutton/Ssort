@@ -519,7 +519,8 @@ public class Datamanager : MonoBehaviour
             colCopyRev.Reverse();
             colCopy.Sort();
             var blocksSpwaned = FindObjectsOfType<Block>();
-            var sucessSound = GetComponent<AudioSource>();
+            var sounds = GetComponents<AudioSource>();
+
             var rowLen = blocksSpwaned.Where(block => (float)Math.Round(block.transform.position.y) == rowRounded).Count();
             var columnLen = blocksSpwaned.Where(block => (float)Math.Round(block.transform.position.x) == colRounded).Count();
             if ((rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions)) && rowLen==5)
@@ -546,7 +547,7 @@ public class Datamanager : MonoBehaviour
 
                 IncreaseScore("row");
                 rowCleared = true;
-                sucessSound.Play();
+                sounds[0].Play();
                 return true;
             }
 
@@ -575,7 +576,7 @@ public class Datamanager : MonoBehaviour
                 }
                 IncreaseScore("column");
                 columnsCleared = true;
-                sucessSound.Play();
+                sounds[0].Play();
                 return true;
             }
 
@@ -584,7 +585,11 @@ public class Datamanager : MonoBehaviour
         return false;
     }
 
-
+    public void InplaceSound()
+    {
+        var sound = GetComponents<AudioSource>();
+        sound[1].Play();
+    }
 
     public void ShiftDownOneRow()
     {

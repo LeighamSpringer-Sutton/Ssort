@@ -46,6 +46,7 @@ public class Block : MonoBehaviour
     private float shiftSpeed = 1.0f;
     private float textZvalue = -2f;
     private Vector3 whereToShift;
+    private AudioSource movementSound;
     [SerializeField]private SceneLoader sceneLoader;
 
    
@@ -60,8 +61,8 @@ public class Block : MonoBehaviour
         //text moving relative to canvas
 
         //
-        
 
+        movementSound = GetComponents<AudioSource>()[0];
         blocksOnMap = FindObjectsOfType<Block>();
 
         datamanager = FindObjectOfType<Datamanager>();
@@ -195,7 +196,7 @@ public class Block : MonoBehaviour
             if (datamanager.CheckForMatches(transform.position.y, transform.position.x))
             {
 
-                GetComponent<AudioSource>().Play();
+                
 
                 
 
@@ -204,7 +205,7 @@ public class Block : MonoBehaviour
 
             else
             {
-
+                datamanager.InplaceSound();
                 datamanager.CreateNewBlock();
                 color.a = 1.0f;
                 spriteRender.color = color;
@@ -374,6 +375,7 @@ public class Block : MonoBehaviour
                 return;
             }
             transform.position = new Vector3(totalAmountToMove, transform.position.y);
+            movementSound.Play();
         }
         else if (Input.GetKeyDown(KeyCode.RightArrow))
         {
@@ -396,7 +398,7 @@ public class Block : MonoBehaviour
             //Debug.Log((float)Math.Round(totalAmountToMove, 1) + "," + (float)Math.Round(transform.position.y, 1) + " is not contained");
 
             transform.position = new Vector3((float)Math.Round(totalAmountToMove, 1), (float)Math.Round(transform.position.y, 1));
-
+            movementSound.Play();
 
         }
 
