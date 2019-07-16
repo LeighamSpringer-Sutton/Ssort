@@ -18,8 +18,8 @@ public class Block : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI equationText;
     //[SerializeField] private Canvas canvas;
     [SerializeField] private GameObject particules;
-
     
+
     private float amountToMove = 2.57f;
     private float totalAmountToMove;
     private float screenWidth = 10f;
@@ -46,6 +46,8 @@ public class Block : MonoBehaviour
     private float shiftSpeed = 1.0f;
     private float textZvalue = -2f;
     private Vector3 whereToShift;
+    [SerializeField]private SceneLoader sceneLoader;
+
    
 
 
@@ -58,7 +60,7 @@ public class Block : MonoBehaviour
         //text moving relative to canvas
 
         //
-
+        
 
         blocksOnMap = FindObjectsOfType<Block>();
 
@@ -166,13 +168,23 @@ public class Block : MonoBehaviour
 
 
 
+           
+
+           
+
+            var newyPos=0f;
+            try
+            {
+                newyPos = datamanager.SnapToBottom(bottomOfMap, transform.position.x, transform.position.y, spriteRender.bounds.min.y);
+            }
 
 
-            //datamanager.AddToblocksOnMap(gameObject);
+            catch{
+                
 
-
-
-            var newyPos = datamanager.SnapToBottom(bottomOfMap, transform.position.x, transform.position.y, spriteRender.bounds.min.y);
+                sceneLoader.LoadNextScene();
+                return;
+            }
 
 
             transform.position = new Vector3(transform.position.x, newyPos, blockZValue);
@@ -182,8 +194,8 @@ public class Block : MonoBehaviour
             active = false;
             if (datamanager.CheckForMatches(transform.position.y, transform.position.x))
             {
-                //datamanager.ShiftDataDownOnerow();
-                
+
+                GetComponent<AudioSource>().Play();
 
                 
 

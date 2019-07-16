@@ -102,12 +102,15 @@ public class Datamanager : MonoBehaviour
         {
             gameScore += 5;
             scoreText.text = "Score :" + " " + gameScore;
+            GameScore.gameScore = gameScore;
             return;
         }
         
         gameScore += 4;
         scoreText.text = "Score :" + " " + gameScore;
-        
+        GameScore.gameScore = gameScore;
+
+
 
     }
 
@@ -516,7 +519,7 @@ public class Datamanager : MonoBehaviour
             colCopyRev.Reverse();
             colCopy.Sort();
             var blocksSpwaned = FindObjectsOfType<Block>();
-
+            var sucessSound = GetComponent<AudioSource>();
             var rowLen = blocksSpwaned.Where(block => (float)Math.Round(block.transform.position.y) == rowRounded).Count();
             var columnLen = blocksSpwaned.Where(block => (float)Math.Round(block.transform.position.x) == colRounded).Count();
             if ((rowCopy.SequenceEqual(currentRowSolutions) || rowCopyRev.SequenceEqual(currentRowSolutions)) && rowLen==5)
@@ -543,6 +546,7 @@ public class Datamanager : MonoBehaviour
 
                 IncreaseScore("row");
                 rowCleared = true;
+                sucessSound.Play();
                 return true;
             }
 
@@ -571,6 +575,7 @@ public class Datamanager : MonoBehaviour
                 }
                 IncreaseScore("column");
                 columnsCleared = true;
+                sucessSound.Play();
                 return true;
             }
 
