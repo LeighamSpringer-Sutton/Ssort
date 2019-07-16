@@ -7,6 +7,9 @@ using UnityEngine.SceneManagement;
 public class SceneLoader : MonoBehaviour
 {
     // Start is called before the first frame update
+
+    
+
     public void LoadNextScene()
     {
         
@@ -16,10 +19,10 @@ public class SceneLoader : MonoBehaviour
        
     }
 
-    public void LoadSceneOne()
+    public void LoadGameScene()
     {
         //FindObjectOfType<GameSession>().ResetGame();
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(1);
     }
 
     public void QuitGame()
