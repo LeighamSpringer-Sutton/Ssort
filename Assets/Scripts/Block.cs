@@ -115,7 +115,7 @@ public class Block : MonoBehaviour
 
 
 
-        equationText.transform.position = transform.position;
+        //equationText.transform.position = transform.position;
 
 
 
@@ -126,12 +126,13 @@ public class Block : MonoBehaviour
 
 
             transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
-            equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
+            //equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
             if (whereToShift.y == transform.position.y)
             {
 
                 transform.position = whereToShift;
-                equationText.transform.position = whereToShift;
+                
+                //equationText.transform.position = whereToShift;
                 shiftBlock = false;
                 datamanager.blocksMoved++;
                 StoreBlcokData(transform.position.x, transform.position.y);

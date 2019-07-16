@@ -15,7 +15,7 @@ public class Datamanager : MonoBehaviour
     public List<Vector3> postionsOnGrid;
     private List<Vector3> topsOfBlocks;
     [SerializeField] private TMPro.TextMeshProUGUI scoreText;
-
+    [SerializeField] private TMPro.TextMeshProUGUI rangeText;
 
     private List<Block> blocksOnMap;
     private Dictionary<float, List<Bounds>> boundsByColumn;
@@ -42,12 +42,15 @@ public class Datamanager : MonoBehaviour
     public bool columnsCleared = false;
     public bool shiftingFunctionFinished = false;
     public int gameScore;
+    public int gameScoreOnPreviousGeneration;
+    
+    public int MaxRandNum = 10;
     void Start()
 
     {
 
 
-
+        Debug.Log(MaxRandNum);
         upComingEquations = new List<int[]>();
         upComingSigns = new List<string>();
 
@@ -75,7 +78,7 @@ public class Datamanager : MonoBehaviour
 
         postionsOnGrid = new List<Vector3>();
         scoreText.text = "Score :" + " " + gameScore;
-
+        rangeText.text = "Range :" + "0 - " + MaxRandNum*2;
         CreateNewBlock();
 
     }
@@ -310,22 +313,39 @@ public class Datamanager : MonoBehaviour
        ;
         return new int[] { num1, num2 };
     }
+
+    public void IncreaseMaxRandomNumberRange(int prevScore, int currentScore)
+    {
+        var prevScoreByTen = Math.Floor(prevScore / 10d);
+        var currentScoreByTen = Math.Floor(currentScore / 10d);
+        if (currentScoreByTen-prevScoreByTen > 1)
+        {
+
+            Debug.Log(currentScoreByTen - prevScoreByTen);
+            Debug.Log("Working");
+            MaxRandNum += 5;
+            rangeText.text = "Range :" + " 0 - " + MaxRandNum * 2;
+        }
+    }
+
+
     public int[] GenerateEquation(string operand)
     {
+        IncreaseMaxRandomNumberRange(gameScoreOnPreviousGeneration,gameScore);
 
-
-        var num1 = Random.Range(1, 3);
-        var num2 = Random.Range(1, 3);
+        var num1 = Random.Range(1, MaxRandNum);
+        var num2 = Random.Range(1, MaxRandNum);
+        
         if (operand == "/")
         {
 
             while (num1 % num2 != 0)
             {
-                num2 = Random.Range(1, 12);
+                num2 = Random.Range(1, MaxRandNum);
             }
         }
 
-
+        gameScoreOnPreviousGeneration = gameScore;
         return new int[] { num1, num2 };
     }
     public string PositionTextBasedOffEquation(int equationLength)
