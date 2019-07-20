@@ -16,6 +16,7 @@ public class Datamanager : MonoBehaviour
     private List<Vector3> topsOfBlocks;
     [SerializeField] private TMPro.TextMeshProUGUI scoreText;
     [SerializeField] private TMPro.TextMeshProUGUI rangeText;
+    
 
     private List<Block> blocksOnMap;
     private Dictionary<float, List<Bounds>> boundsByColumn;
@@ -43,7 +44,7 @@ public class Datamanager : MonoBehaviour
     public bool shiftingFunctionFinished = false;
     public int gameScore;
     public int gameScoreOnPreviousGeneration;
-    
+    private string UpcomingText;
     public int MaxRandNum = 10;
     void Start()
 
@@ -78,7 +79,7 @@ public class Datamanager : MonoBehaviour
 
         postionsOnGrid = new List<Vector3>();
         scoreText.text = "Score :" + " " + gameScore;
-        rangeText.text = "Range :" + "0 - " + MaxRandNum*2;
+        rangeText.text = "Range :" + "0 - " + MaxRandNum;
         CreateNewBlock();
 
     }
@@ -302,6 +303,8 @@ public class Datamanager : MonoBehaviour
         upComingEquations.RemoveAt(upComingEquations.Count - 1);
         if (upComingEquations.Count != 0)
         {
+
+            UpcomingText = "UPCOMING : " + upComingEquations[0][0].ToString() + upComingSigns[0].ToString() + upComingEquations[0][1].ToString();
             Debug.Log("upcoming is " + upComingEquations[0][0] + upComingSigns[0] + upComingEquations[0][1]);
         }
 
@@ -309,22 +312,29 @@ public class Datamanager : MonoBehaviour
         {
             GenerateTwoEquations();
             Debug.Log("upcoming is " + upComingEquations[1][0] + upComingSigns[1] + upComingEquations[1][1]);
+            UpcomingText = "UPCOMING : " + upComingEquations[1][0].ToString() + upComingSigns[1].ToString() + upComingEquations[1][1].ToString();
         }
-       ;
+       
         return new int[] { num1, num2 };
+    }
+
+
+    public void SetUpcomingText(TMPro.TextMeshProUGUI textToset)
+    {
+        textToset.text = UpcomingText;
     }
 
     public void IncreaseMaxRandomNumberRange(int prevScore, int currentScore)
     {
         var prevScoreByTen = Math.Floor(prevScore / 10d);
         var currentScoreByTen = Math.Floor(currentScore / 10d);
-        if (currentScoreByTen-prevScoreByTen > 1)
+        if (currentScoreByTen-prevScoreByTen > 1 && MaxRandNum >100)
         {
 
             Debug.Log(currentScoreByTen - prevScoreByTen);
             Debug.Log("Working");
             MaxRandNum += 5;
-            rangeText.text = "Range :" + " 0 - " + MaxRandNum * 2;
+            rangeText.text = "Range :" + " 0 - " + MaxRandNum ;
         }
     }
 

@@ -18,7 +18,7 @@ public class Block : MonoBehaviour
     [SerializeField] private TMPro.TextMeshProUGUI equationText;
     //[SerializeField] private Canvas canvas;
     [SerializeField] private GameObject particules;
-    
+    [SerializeField] public TMPro.TextMeshProUGUI UpComingText;
 
     private float amountToMove = 2.57f;
     private float totalAmountToMove;
@@ -78,6 +78,8 @@ public class Block : MonoBehaviour
 
 
         var equation = datamanager.PullEquation();
+
+        datamanager.SetUpcomingText(UpComingText);
         var num1Str = equation[0].ToString();
         var num2Str = equation[1].ToString();
         var spaces = datamanager.PositionTextBasedOffEquation(num1Str.Length + num2Str.Length);
@@ -114,8 +116,11 @@ public class Block : MonoBehaviour
 
 
 
-
-        //equationText.transform.position = transform.position;
+        if (!(shiftBlock && datamanager.shiftingFunctionFinished))
+        {
+            equationText.transform.position = transform.position;
+        }
+        
 
 
 
@@ -124,9 +129,9 @@ public class Block : MonoBehaviour
         if (shiftBlock && datamanager.shiftingFunctionFinished)
         {
 
-
+            
             transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
-            //equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
+            equationText.transform.position = Vector3.MoveTowards(transform.position, whereToShift, shiftSpeed * Time.deltaTime);
             if (whereToShift.y == transform.position.y)
             {
 
