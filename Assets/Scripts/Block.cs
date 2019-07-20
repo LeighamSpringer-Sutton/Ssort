@@ -86,13 +86,64 @@ public class Block : MonoBehaviour
         equationText.text = spaces + equation[0] + sign + equation[1];
 
         solution = datamanager.ComputeSolution(equation[0], equation[1], sign);
-        spriteRender.sprite = allBocks[Random.Range(0, 10)];
+        var blockColor = allBocks[Random.Range(0, 10)];
+
+        var BlockColorNameSplit = blockColor.name.Split('_');
+        var rgbValues = PickParticleColor(BlockColorNameSplit[BlockColorNameSplit.Length-1]);
+        spriteRender.sprite = blockColor;
+
+
+        var system = particules.GetComponent<ParticleSystem>();
+
+        var sysMain = system.main;
+
+
+        sysMain.startColor = new Color(171,255, 134, 255);
+
+        
+
+        
+
+
+
         color = spriteRender.color;
         textColor = equationText.color;
 
 
         active = true;
     }
+
+    public int[] PickParticleColor(string color)
+    {
+        switch (color)
+        {
+            case "Black":
+                return new int[] { 0,0,255,255};
+
+            case "Blue":
+                return new int[] { 60, 149, 248, 255 };
+            case "Cyan":
+                return new int[] { 122, 252, 255, 255 };
+            case "Green":
+                return new int[] { 118, 246,110, 255 };
+            case "Grey":
+                return new int[] { 206, 155, 255, 255 };
+            case "Orange":
+                return new int[] { 255, 151, 85, 255 };
+            case "Pink":
+                return new int[] { 253, 159, 224, 255 };
+            case "Purple":
+                return new int[] { 188, 58, 231, 255 };
+            case "Red":
+                return new int[] { 255, 64, 116, 255 };
+            case "White":
+                return new int[] { 255, 255, 255, 255 };
+            case "Yellow":
+                return new int[] { 255, 244, 134, 255 };
+        }
+        return new int[] {255, 255, 255, 255 };
+    }
+
 
     // Update is called once per frame
     public bool ShiftBlockStatus()
@@ -305,7 +356,9 @@ public class Block : MonoBehaviour
    
     private void TriggerParticules()
     {
+        
         var particle = Instantiate(particules, new Vector3(transform.position.x, transform.position.y, 0), transform.rotation);
+        
         ParticleSystem parts = particle.GetComponent<ParticleSystem>();
         float totalDuration = parts.duration + parts.startLifetime;
         Destroy(particle, totalDuration);
