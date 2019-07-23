@@ -93,15 +93,18 @@ public class Block : MonoBehaviour
         spriteRender.sprite = blockColor;
 
 
+
+
+        
         var system = particules.GetComponent<ParticleSystem>();
 
         var sysMain = system.main;
 
 
-        sysMain.startColor = new Color(171,255, 134, 255);
+        sysMain.startColor = new Color(rgbValues[0], rgbValues[1], rgbValues[2], rgbValues[3]);
 
         
-
+        
         
 
 

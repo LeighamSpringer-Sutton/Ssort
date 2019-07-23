@@ -328,7 +328,7 @@ public class Datamanager : MonoBehaviour
     {
         var prevScoreByTen = Math.Floor(prevScore / 10d);
         var currentScoreByTen = Math.Floor(currentScore / 10d);
-        if (currentScoreByTen-prevScoreByTen > 1 && MaxRandNum >100)
+        if (currentScoreByTen-prevScoreByTen == 1 && MaxRandNum <100)
         {
 
             Debug.Log(currentScoreByTen - prevScoreByTen);
@@ -755,14 +755,7 @@ public void AddToBoundsByColumn(float column, Bounds bounds)
         postionsOnGrid.Add(position);
     }
 
-    public void AllData()
-    {
-        foreach (var v in postionsOnGrid)
-        {
-            Debug.Log(v);
-        }
-    }
-
+  
     public void AddToTopsOfBlockData(Vector3 topOfBlock)
     {
         topsOfBlocks.Add(topOfBlock);
